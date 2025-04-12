@@ -45,6 +45,19 @@
       line-height: 26px;
       font-weight: bold;
     }
+    .position-link {
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .position-link:hover .player {
+      box-shadow: 0 0 8px rgba(255,255,0,0.8);
+      transform: scale(1.1);
+    }
+    .position-note {
+      font-size: 12px;
+      color: #555;
+      margin-top: 20px;
+    }
     @media(max-width:450px){
       #pitch{width:90%;height:auto;padding-bottom:150%;}
       .player{width:6%;height:6%;font-size:9px;line-height:normal;padding-top:3px;}
@@ -69,11 +82,13 @@
   <div class="player" style="top:75%;left:80%;">CB</div>
 
   <!-- Wingbacks -->
-  <a href="lwb.html">
+  <a href="lwb.html" class="position-link">
     <div class="player" style="top:60%;left:10%;">LWB</div>
   </a>
   
-  <div class="player" style="top:60%;left:90%;">RWB</div>
+  <a href="rwb.html" class="position-link">
+    <div class="player" style="top:60%;left:90%;">RWB</div>
+  </a>
 
   <!-- Two Central Midfielders -->
   <div class="player" style="top:60%;left:35%;">CM</div>
@@ -88,7 +103,9 @@
 
 </div>
 
-<p style="margin-top:10px;"><strong>Key:</strong> 🔵 Players positioned according to your 3-4-1-2 system</p>
+<p style="margin-top:10px;"><strong>Key:</strong> 🔵 Players positioned according to 3-4-1-2 system</p>
+
+<p class="position-note"><em>Click on LWB or RWB positions to see detailed movement patterns</em></p>
 
 <p><strong>Explanation:</strong><br>
 - Three CBs provide defensive coverage and stability.<br>
