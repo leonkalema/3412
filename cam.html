@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LWB Movements in 3-4-1-2 System</title>
+  <title>CAM Movements in 3-4-1-2 System</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,7 +66,7 @@
       transition: transform 0.3s;
       z-index: 2;
     }
-    .lwb {
+    .cam {
       background-color: #ffc107;
       color: #000;
       z-index: 3;
@@ -231,30 +231,30 @@
 </head>
 <body>
 
-<h2>LWB Movements in 3-4-1-2 Formation</h2>
-<p>Click on different scenarios to see how the Left Wing Back (LWB) moves in various game situations</p>
+<h2>CAM Movements in 3-4-1-2 Formation</h2>
+<p>Click on different scenarios to see how the Central Attacking Midfielder (CAM) moves in various game situations</p>
 
 <div id="main-container">
   <!-- Interactive Scenarios -->
   <div class="scenario-container">
     <div class="scenario" onclick="showScenario('attacking')">
-      <h4>Attacking Movements</h4>
-      <p>See how the LWB provides width and attacking support when the team has possession.</p>
+      <h4>Attacking Scenarios</h4>
+      <p>See how the CAM operates when the team has possession and is building an attack.</p>
     </div>
     <div class="scenario" onclick="showScenario('transition')">
       <h4>Transition Play</h4>
-      <p>The LWB's movement when possession changes hands in either direction.</p>
+      <p>When possession changes, the CAM has key responsibilities in both directions.</p>
     </div>
     <div class="scenario" onclick="showScenario('defensive')">
       <h4>Defensive Duties</h4>
-      <p>How the LWB contributes to defensive structure and recovers position.</p>
+      <p>Even in a primarily attacking role, the CAM has important defensive responsibilities.</p>
     </div>
   </div>
   
   <!-- Pitch Visualization -->
   <div id="pitch-section">
     <div style="max-width: 500px; margin: 0 auto;">
-      <div class="pitch-label">LWB Movement Patterns</div>
+      <div class="pitch-label">CAM Movement Patterns</div>
       <div id="pitch-movement">
         <div id="pitch">
           <!-- Pitch Lines -->
@@ -270,7 +270,7 @@
           <div class="player" style="top:75%;left:80%;">CB</div>
 
           <!-- Wingbacks -->
-          <div id="lwb-move" class="player lwb" style="top:60%;left:10%;">LWB</div>
+          <div class="player" style="top:60%;left:10%;">LWB</div>
           <div class="player" style="top:60%;left:90%;">RWB</div>
 
           <!-- Two Central Midfielders -->
@@ -278,9 +278,9 @@
           <div class="player" style="top:60%;left:65%;">CM</div>
 
           <!-- Central Attacking Midfielder -->
-          <div class="player" style="top:45%;left:50%;">CAM</div>
+          <div id="cam-move" class="player cam" style="top:45%;left:50%;">CAM</div>
 
-          <!-- LWB Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- CAM Movement Paths - initially hidden, shown by JavaScript -->
           <!-- Attacking Scenario Paths -->
           <svg id="path-attacking-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
             <defs>
@@ -288,7 +288,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#FFC107" />
               </marker>
             </defs>
-            <path d="M 40,360 C 50,300 60,250 70,180" stroke="#FFC107" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 230,220 210,170 180,170" stroke="#FFC107" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-1)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
@@ -301,7 +301,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#FF8C00" />
               </marker>
             </defs>
-            <path d="M 40,360 C 80,330 110,300 140,280" stroke="#FF8C00" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 170,220 150,200 130,220" stroke="#FF8C00" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-2)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
@@ -314,7 +314,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#32CD32" />
               </marker>
             </defs>
-            <path d="M 40,360 C 30,280 25,220 20,180" stroke="#32CD32" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 230,240 250,210 270,220" stroke="#32CD32" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-3)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
@@ -328,7 +328,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#FF3333" />
               </marker>
             </defs>
-            <path d="M 40,360 C 30,400 25,430 20,450" stroke="#FF3333" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 210,300 220,320 200,340" stroke="#FF3333" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-4)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
@@ -341,7 +341,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#DC143C" />
               </marker>
             </defs>
-            <path d="M 40,360 C 70,380 100,400 120,400" stroke="#DC143C" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 180,290 150,300 160,320" stroke="#DC143C" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-5)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
@@ -355,7 +355,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#9932CC" />
               </marker>
             </defs>
-            <path d="M 40,360 C 50,300 40,240 30,200" stroke="#9932CC" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 160,230 130,220 120,190" stroke="#9932CC" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-6)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
@@ -368,7 +368,7 @@
                 <polygon points="0 0, 10 3.5, 0 7" fill="#4B0082" />
               </marker>
             </defs>
-            <path d="M 40,250 C 50,300 40,340 40,360" stroke="#4B0082" stroke-width="3" fill="none" 
+            <path d="M 200,270 C 240,230 270,220 280,190" stroke="#4B0082" stroke-width="3" fill="none" 
                   stroke-dasharray="5,5" marker-end="url(#arrowhead-7)">
               <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
               <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
@@ -380,15 +380,15 @@
           <div class="player" style="top:30%;left:65%;">ST</div>
 
           <!-- Movement Labels - Shown/hidden by JavaScript -->
-          <div id="label-attacking-1" class="movement-label" style="display:none; top:30%;left:14%;">Overlap Run</div>
-          <div id="label-attacking-2" class="movement-label" style="display:none; top:47%;left:35%;">Inside Channel Run</div>
-          <div id="label-attacking-3" class="movement-label" style="display:none; top:30%;left:5%;">Wide Support Position</div>
+          <div id="label-attacking-1" class="movement-label" style="display:none; top:28%;left:44%;">Find Space Between Lines</div>
+          <div id="label-attacking-2" class="movement-label" style="display:none; top:36%;left:24%;">Support Left Wing</div>
+          <div id="label-attacking-3" class="movement-label" style="display:none; top:36%;left:68%;">Support Right Wing</div>
           
-          <div id="label-defensive-1" class="movement-label" style="display:none; top:74%;left:5%;">Defensive Recovery</div>
-          <div id="label-defensive-2" class="movement-label" style="display:none; top:67%;left:30%;">Press Opposition</div>
+          <div id="label-defensive-1" class="movement-label" style="display:none; top:56%;left:48%;">Drop to Block Passing Lanes</div>
+          <div id="label-defensive-2" class="movement-label" style="display:none; top:53%;left:30%;">Press Opponent Midfielder</div>
           
-          <div id="label-transition-1" class="movement-label" style="display:none; top:34%;left:8%;">Quick Counter Support</div>
-          <div id="label-transition-2" class="movement-label" style="display:none; top:60%;left:10%;">Return to Position</div>
+          <div id="label-transition-1" class="movement-label" style="display:none; top:32%;left:18%;">Quick Counter Left</div>
+          <div id="label-transition-2" class="movement-label" style="display:none; top:32%;left:70%;">Quick Counter Right</div>
         </div>
       </div>
     </div>
@@ -405,107 +405,103 @@
     <div class="tab-content">
       <div id="description" class="tab-pane active">
         <h3 id="scenario-title">Select a Scenario Above</h3>
-        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Left Wing Back (LWB) position.</p>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Central Attacking Midfielder (CAM) position.</p>
         
         <div id="attacking-content" style="display:none;">
-          <h4>LWB Attacking Movement Patterns</h4>
-          <p>The Left Wing Back is crucial for providing width and attacking support on the left flank in a 3-4-1-2 formation. In attack, they operate in three main ways:</p>
+          <h4>CAM Attacking Movement Patterns</h4>
+          <p>The CAM is the creative hub of the team in a 3-4-1-2 formation. When in possession, they operate primarily in these three ways:</p>
           <ol>
-            <li><strong>Overlap Run (Yellow Path)</strong> - The LWB makes aggressive forward runs beyond attacking players to create crossing opportunities from advanced areas. This stretches the opposition defense and opens space for teammates.</li>
-            <li><strong>Inside Channel Run (Orange Path)</strong> - When appropriate, the LWB makes diagonal runs into the half-spaces between defense and midfield, creating numerical advantages and passing options in central areas.</li>
-            <li><strong>Wide Support Position (Green Path)</strong> - Sometimes the LWB holds a wide position to maintain the team's width, create passing angles, and provide balance to the attack while being ready to receive switches of play.</li>
+            <li><strong>Finding Space Between Lines (Yellow Path)</strong> - The CAM looks to position themselves between the opposition's defensive and midfield lines, creating passing options for teammates and threatening the defense.</li>
+            <li><strong>Supporting Wing Play (Orange Path)</strong> - When play develops on the left flank, the CAM shifts to provide an inside passing option for the LWB or to receive a cutback.</li>
+            <li><strong>Right Side Support (Green Path)</strong> - Similarly, when play develops on the right, the CAM drifts to support the RWB and create combinations.</li>
           </ol>
-          <p>These movements are determined by the position of teammates, how the opposition defends, and the phase of possession.</p>
+          <p>These movements are fluid and responsive to how the opposition defends and where space becomes available.</p>
         </div>
         
         <div id="defensive-content" style="display:none;">
-          <h4>LWB Defensive Responsibilities</h4>
-          <p>Defensively, the LWB has crucial responsibilities that balance their attacking freedom:</p>
+          <h4>CAM Defensive Responsibilities</h4>
+          <p>While primarily an attacking player, the CAM has crucial defensive duties:</p>
           <ol>
-            <li><strong>Defensive Recovery (Red Path)</strong> - When possession is lost, the LWB's first priority is often to quickly track back into a defensive position, forming part of a back-5 alongside the three center backs and opposite wing back.</li>
-            <li><strong>Pressing Opposition (Dark Red Path)</strong> - When the opposition has the ball on the LWB's side, they apply pressure to the ball carrier, attempting to win possession back or force play inside toward central teammates.</li>
+            <li><strong>Blocking Passing Lanes (Red Path)</strong> - When the team loses possession, the CAM's first responsibility is often to drop back and block central passing lanes, preventing easy progression through the middle.</li>
+            <li><strong>Pressing Opposition Midfielders (Dark Red Path)</strong> - The CAM will apply pressure to opposition midfielders when they receive the ball in the CAM's zone, helping to win back possession.</li>
           </ol>
-          <p>The defensive movements of the LWB are critical to preventing the opposition from exploiting wide areas and ensuring the team maintains its defensive shape.</p>
+          <p>The CAM's defensive work is vital to the team's pressing strategy and preventing the opposition from building attacks through the center.</p>
         </div>
         
         <div id="transition-content" style="display:none;">
-          <h4>LWB in Transition Phases</h4>
-          <p>Transitions between defense and attack are moments where the LWB's positioning and decision-making are crucial:</p>
+          <h4>CAM in Transition Phases</h4>
+          <p>Transitions between defense and attack are critical moments where the CAM plays a pivotal role:</p>
           <ol>
-            <li><strong>Quick Counter Support (Purple Path)</strong> - When possession is won, the LWB quickly provides width on the left flank, creating an immediate outlet for counter-attacks and stretching the opposition as they attempt to recover.</li>
-            <li><strong>Recovery Run (Dark Purple Path)</strong> - When possession is lost while the LWB is in an advanced position, they must make quick recovery runs to reestablish defensive shape and protect vulnerable spaces.</li>
+            <li><strong>Quick Counter-Attack Support (Purple Path)</strong> - When possession is won, the CAM quickly provides a central passing option before moving into advanced positions on the left.</li>
+            <li><strong>Right Side Counter-Attack (Dark Purple Path)</strong> - Alternatively, the CAM can support right-sided transitions, moving into space to receive the ball or create space for teammates.</li>
           </ol>
-          <p>The LWB's ability to transition quickly between attack and defense is essential to the team's ability to control games and maintain tactical balance.</p>
+          <p>The speed and decision-making of the CAM during transitions can be the difference between a successful counter-attack and allowing the opposition to reorganize.</p>
         </div>
       </div>
       
       <div id="instructions" class="tab-pane">
-        <h3>LWB Player Instructions</h3>
+        <h3>CAM Player Instructions</h3>
         
         <h4>Attacking Phase</h4>
         <ul>
-          <li>Provide maximum width on the left side to stretch opposition defense</li>
-          <li>Time forward runs to overlap when appropriate, especially when midfielders have possession</li>
-          <li>Look to deliver quality crosses from advanced positions</li>
-          <li>Create passing triangles with nearby CM and LCB</li>
-          <li>Be available for switches of play from the right side</li>
-          <li>Move inside when the play is developing on the opposite flank</li>
+          <li>Position yourself between opposition lines to receive the ball and turn</li>
+          <li>Create triangles with nearby teammates (CMs, STs, and wingbacks)</li>
+          <li>Scan constantly for space and make yourself available for passes</li>
+          <li>Move into half-spaces when wingbacks have possession</li>
+          <li>Make late runs into the box when crosses come in from wide areas</li>
+          <li>Look to play quick one-twos with strikers to break defensive lines</li>
         </ul>
         
         <h4>Defensive Phase</h4>
         <ul>
-          <li>Quickly recover defensive position when possession is lost</li>
-          <li>Form part of a back-5 when defending deep</li>
-          <li>Press aggressively when opposition attacks down your side</li>
-          <li>Cover for the LCB if they are drawn out of position</li>
-          <li>Tuck inside to maintain compact defensive shape when ball is on opposite flank</li>
-          <li>Communicate constantly with the LCB about marking responsibilities</li>
+          <li>Close down opposition deep-lying playmakers when they receive the ball</li>
+          <li>Cut passing lanes to forward players</li>
+          <li>Drop into midfield line when team needs to establish defensive shape</li>
+          <li>Press with intensity in your zone but maintain team shape</li>
+          <li>Communicate with CMs about defensive responsibilities</li>
         </ul>
         
         <h4>Transition Phase</h4>
         <ul>
-          <li>React immediately to possession changes in either direction</li>
-          <li>When possession is won, provide quick width for counter-attacks</li>
-          <li>When possession is lost, make immediate recovery runs</li>
-          <li>Look for quick outlet passes from defenders to launch counters</li>
-          <li>Be prepared to counter-press when possession is lost in the attacking third</li>
-          <li>Recognize when to commit forward and when to maintain defensive security</li>
+          <li>Be ready to receive the first pass when possession is won</li>
+          <li>Quickly scan for forward passing options</li>
+          <li>Make yourself available in space when teammates win the ball</li>
+          <li>Lead counter-attacks through the middle or by supporting wide players</li>
+          <li>When possession is lost, immediately counter-press or recover position</li>
         </ul>
       </div>
       
       <div id="tips" class="tab-pane">
-        <h3>Coaching Tips for the LWB Position</h3>
+        <h3>Coaching Tips for the CAM Position</h3>
         
         <h4>Player Selection</h4>
-        <p>The ideal LWB in this system should possess:</p>
+        <p>The ideal CAM in this system should possess:</p>
         <ul>
-          <li>Exceptional stamina and work rate to cover the entire flank</li>
-          <li>Good pace to recover defensively and exploit space in attack</li>
-          <li>Strong crossing ability from various positions</li>
-          <li>Tactical awareness to know when to attack and when to defend</li>
-          <li>Solid one-on-one defensive skills</li>
-          <li>Ability to play in tight spaces under pressure</li>
+          <li>Excellent vision and passing ability</li>
+          <li>Good decision-making under pressure</li>
+          <li>Technical skill to operate in tight spaces</li>
+          <li>Intelligence to find space between opposition lines</li>
+          <li>Work rate to contribute defensively</li>
+          <li>Ability to score from outside the box</li>
         </ul>
         
         <h4>Training Focus</h4>
         <p>Develop these key aspects in training:</p>
         <ul>
-          <li>Overlapping runs and timing with wingers/inside forwards</li>
-          <li>Crossing from different angles and positions</li>
-          <li>Quick transition drills focusing on recovery runs</li>
-          <li>Combination play with central midfielders and center backs</li>
-          <li>Defensive positioning and one-on-one defending</li>
-          <li>Endurance training to maintain performance throughout matches</li>
+          <li>Rondo exercises to improve quick passing and movement</li>
+          <li>Small-sided games emphasizing finding space between lines</li>
+          <li>Transition drills focusing on quick counter-attacks</li>
+          <li>Finishing exercises from the edge of the box</li>
+          <li>Combination play with strikers and wingbacks</li>
         </ul>
         
         <h4>Game Management</h4>
         <p>Adjustments based on match situations:</p>
         <ul>
-          <li>Against stronger opposition: LWB may need to be more conservative and focus on defensive solidity</li>
-          <li>When leading: Consider adjusting the LWB to maintain defensive shape rather than committing forward</li>
-          <li>When chasing a goal: Encourage more aggressive overlapping runs and final third entries</li>
-          <li>Against teams with dangerous wingers: LWB should focus more on tracking their movements</li>
-          <li>In possession-dominant games: LWB can position higher up the pitch, almost as a winger</li>
+          <li>Against high-pressing teams: CAM may need to drop deeper to help midfield progression</li>
+          <li>When leading: CAM should focus more on defensive solidity and possession retention</li>
+          <li>When chasing a goal: CAM can take more risks and make more forward runs</li>
+          <li>Against teams sitting deep: CAM needs patience to find openings and may shoot more from distance</li>
         </ul>
       </div>
     </div>
@@ -517,8 +513,8 @@
   <h3>Navigation</h3>
   <div class="nav-buttons">
     <a href="index.html" class="nav-btn">Formation Overview</a>
+    <a href="lwb.html" class="nav-btn">LWB Position</a>
     <a href="rwb.html" class="nav-btn">RWB Position</a>
-    <a href="cam.html" class="nav-btn">CAM Position</a>
     <!-- Other position links will be added here as they are created -->
   </div>
 </div>
@@ -557,7 +553,7 @@
       document.getElementById('label-attacking-3').style.display = 'block';
       document.getElementById('attacking-content').style.display = 'block';
       document.getElementById('scenario-title').textContent = 'Attacking Movements';
-      document.getElementById('scenario-description').textContent = 'The LWB provides width and offensive support on the left flank, creating crossing opportunities and stretching the opposition defense.';
+      document.getElementById('scenario-description').textContent = 'The CAM is the creative hub of the team, connecting midfield to attack and creating goal-scoring opportunities.';
     } 
     else if (scenario === 'defensive') {
       document.getElementById('path-defensive-1').style.display = 'block';
@@ -566,7 +562,7 @@
       document.getElementById('label-defensive-2').style.display = 'block';
       document.getElementById('defensive-content').style.display = 'block';
       document.getElementById('scenario-title').textContent = 'Defensive Duties';
-      document.getElementById('scenario-description').textContent = 'The LWB has important defensive responsibilities, tracking back to form a back-5 and pressing opponents on their flank.';
+      document.getElementById('scenario-description').textContent = 'While primarily offensive, the CAM has important defensive responsibilities when the team loses possession.';
     }
     else if (scenario === 'transition') {
       document.getElementById('path-transition-1').style.display = 'block';
@@ -575,7 +571,7 @@
       document.getElementById('label-transition-2').style.display = 'block';
       document.getElementById('transition-content').style.display = 'block';
       document.getElementById('scenario-title').textContent = 'Transition Play';
-      document.getElementById('scenario-description').textContent = 'The LWB must adapt quickly during transitions, providing width for counter-attacks and recovering position when possession is lost.';
+      document.getElementById('scenario-description').textContent = 'The CAM is vital during transitions, helping the team switch quickly between defense and attack.';
     }
   }
   

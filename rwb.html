@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RWB Movements in 3-4-1-2 System</title>
   <style>
     body {
@@ -9,6 +10,19 @@
       text-align: center;
       background-color: #f0f0f0;
       padding: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #pitch-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
     }
     #pitch {
       position: relative;
@@ -18,6 +32,11 @@
       background-color: #6da544;
       border: 2px solid #333;
       border-radius: 5px;
+    }
+    .pitch-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
     }
     .line {
       position: absolute;
@@ -44,224 +63,542 @@
       font-size: 11px;
       line-height: 26px;
       font-weight: bold;
+      transition: transform 0.3s;
+      z-index: 2;
     }
     .rwb {
-      background-color: #ffc107; /* Neutral Yellow for RWB */
+      background-color: #ffc107;
       color: #000;
+      z-index: 3;
     }
-    .arrow {
+    /* Path visualization */
+    .movement-path {
       position: absolute;
-      width: 0; height: 0;
-      opacity: 0.9;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
+      z-index: 1;
+      pointer-events: none;
     }
-    .attack1 {
-      border-bottom: 14px solid yellow;
-      animation: moveAttack1 3s infinite ease-in-out;
-    }
-    .attack2 {
-      border-bottom: 14px solid orange;
-      animation: moveAttack2 3s infinite ease-in-out;
-      animation-delay: 0.5s;
-    }
-    .attack3 {
-      border-bottom: 14px solid gold;
-      animation: moveAttack3 3s infinite ease-in-out;
-      animation-delay: 1s;
-    }
-    .defend1 {
-      border-bottom: 14px solid red;
-      animation: moveDefend1 3s infinite ease-in-out;
-    }
-    .defend2 {
-      border-bottom: 14px solid #ff6666;
-      animation: moveDefend2 3s infinite ease-in-out;
-      animation-delay: 0.5s;
-    }
-    .defend3 {
-      border-bottom: 14px solid #cc0000;
-      animation: moveDefend3 3s infinite ease-in-out;
-      animation-delay: 1s;
-    }
-    .phase-switch {
+    .movement-label {
       position: absolute;
-      padding: 10px;
-      background-color: rgba(255,255,255,0.8);
-      border-radius: 5px;
-      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
       font-weight: bold;
-      font-size: 12px;
-      top: 10px;
-      right: 10px;
+      white-space: nowrap;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.1);
     }
-    /* Attacking movements */
-    @keyframes moveAttack1 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(-40px, -80px);}
-      100% {opacity: 0; transform: translate(-80px, -160px);}
+    /* Animation controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
     }
-    @keyframes moveAttack2 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(-20px, -120px);}
-      100% {opacity: 0; transform: translate(-30px, -200px);}
+    .control-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-    @keyframes moveAttack3 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(-60px, -40px);}
-      100% {opacity: 0; transform: translate(-100px, -80px);}
+    .control-btn:hover {
+      background-color: #0056b3;
     }
-    /* Defensive movements */
-    @keyframes moveDefend1 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(20px, 60px);}
-      100% {opacity: 0; transform: translate(40px, 120px);}
+    /* Interactive elements */
+    .scenario {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
     }
-    @keyframes moveDefend2 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(0px, 70px);}
-      100% {opacity: 0; transform: translate(0px, 140px);}
+    .scenario:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    @keyframes moveDefend3 {
-      0% {opacity: 0; transform: translate(0, 0);}
-      50% {opacity: 1; transform: translate(30px, 20px);}
-      100% {opacity: 0; transform: translate(60px, 40px);}
+    .scenario.active {
+      border-color: #0D6EFD;
+      box-shadow: 0 5px 15px rgba(13,110,253,0.2);
     }
-    .movement-key {
+    .scenario.active:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #0D6EFD;
+    }
+    .scenario h4 {
+      margin-top: 0;
+      color: #0D6EFD;
+    }
+    .scenario-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      margin: 20px 0;
+    }
+    /* Movement visuals */
+    .movement-arrow {
+      position: absolute;
+      width: 0; 
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 40px solid;
+      opacity: 0.6;
+      transform-origin: bottom center;
+      z-index: 1;
+    }
+    /* Tabbed content */
+    .tab-container {
       margin-top: 20px;
     }
-    .key-item {
+    .tabs {
       display: flex;
-      align-items: center;
-      margin: 5px;
-      font-size: 14px;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
     }
-    .key-color {
-      width: 20px;
-      height: 20px;
-      margin-right: 5px;
-      border-radius: 3px;
+    .tab {
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #0D6EFD;
+      color: white;
+    }
+    .tab-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      text-align: left;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Navigation section */
+    .nav-section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 15px;
+      background-color: #0D6EFD;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #0a58ca;
+    }
+    @media(max-width:800px){
+      #pitch-section {
+        flex-direction: column;
+      }
     }
     @media(max-width:450px){
       #pitch{width:90%;height:auto;padding-bottom:150%;}
-      .player{width:6%;height:6%;font-size:9px;line-height:normal;padding-top:3px;}
+      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
+      .movement-label{font-size:8px;}
     }
   </style>
 </head>
 <body>
 
-<h3>3-4-1-2 Formation: RWB Comprehensive Movement Patterns</h3>
+<h2>RWB Movements in 3-4-1-2 Formation</h2>
+<p>Click on different scenarios to see how the Right Wing Back (RWB) moves in various game situations</p>
 
-<div id="pitch">
-  <!-- Pitch Lines -->
-  <div class="line halfway"></div>
-  <div class="circle"></div>
-
-  <!-- Goalkeeper -->
-  <div class="player" style="top:90%;left:50%;">GK</div>
-
-  <!-- Three CBs -->
-  <div class="player" style="top:75%;left:20%;">CB</div>
-  <div class="player" style="top:78%;left:50%;">CB</div>
-  <div class="player" style="top:75%;left:80%;">CB</div>
-
-  <!-- Wingbacks -->
-  <div class="player" style="top:60%;left:10%;">LWB</div>
-  <div class="player rwb" style="top:60%;left:90%;">RWB</div>
-
-  <!-- Two Central Midfielders -->
-  <div class="player" style="top:60%;left:35%;">CM</div>
-  <div class="player" style="top:60%;left:65%;">CM</div>
-
-  <!-- Central Attacking Midfielder -->
-  <div class="player" style="top:45%;left:50%;">CAM</div>
-
-  <!-- Two Strikers -->
-  <div class="player" style="top:30%;left:35%;">ST</div>
-  <div class="player" style="top:30%;left:65%;">ST</div>
-
-  <!-- RWB ATTACKING MOVEMENTS -->
-  <!-- Overlap run down the wing -->
-  <div class="arrow attack1" style="top:60%;left:90%;transform:rotate(25deg);"></div>
+<div id="main-container">
+  <!-- Interactive Scenarios -->
+  <div class="scenario-container">
+    <div class="scenario" onclick="showScenario('attacking')">
+      <h4>Attacking Movements</h4>
+      <p>See how the RWB provides width and attacking support when the team has possession.</p>
+    </div>
+    <div class="scenario" onclick="showScenario('transition')">
+      <h4>Transition Play</h4>
+      <p>The RWB's movement when possession changes hands in either direction.</p>
+    </div>
+    <div class="scenario" onclick="showScenario('defensive')">
+      <h4>Defensive Duties</h4>
+      <p>How the RWB contributes to defensive structure and recovers position.</p>
+    </div>
+  </div>
   
-  <!-- Forward central channel run -->
-  <div class="arrow attack2" style="top:60%;left:90%;transform:rotate(45deg);"></div>
-  
-  <!-- Wide cutback to support position -->
-  <div class="arrow attack3" style="top:60%;left:90%;transform:rotate(15deg);"></div>
+  <!-- Pitch Visualization -->
+  <div id="pitch-section">
+    <div style="max-width: 500px; margin: 0 auto;">
+      <div class="pitch-label">RWB Movement Patterns</div>
+      <div id="pitch-movement">
+        <div id="pitch">
+          <!-- Pitch Lines -->
+          <div class="line halfway"></div>
+          <div class="circle"></div>
 
-  <!-- RWB DEFENSIVE MOVEMENTS -->
-  <!-- Track back to defensive position -->
-  <div class="arrow defend1" style="top:60%;left:90%;transform:rotate(25deg);"></div>
-  
-  <!-- Central covering run -->
-  <div class="arrow defend2" style="top:60%;left:90%;transform:rotate(0deg);"></div>
-  
-  <!-- Wide pressing movement -->
-  <div class="arrow defend3" style="top:60%;left:90%;transform:rotate(45deg);"></div>
-</div>
+          <!-- Goalkeeper -->
+          <div class="player" style="top:90%;left:50%;">GK</div>
 
-<div class="movement-key">
-  <h4>Movement Key:</h4>
-  <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-    <div class="key-item">
-      <div class="key-color" style="background-color: yellow;"></div>
-      <span>Overlap Run</span>
+          <!-- Three CBs -->
+          <div class="player" style="top:75%;left:20%;">CB</div>
+          <div class="player" style="top:78%;left:50%;">CB</div>
+          <div class="player" style="top:75%;left:80%;">CB</div>
+
+          <!-- Wingbacks -->
+          <div class="player" style="top:60%;left:10%;">LWB</div>
+          <div id="rwb-move" class="player rwb" style="top:60%;left:90%;">RWB</div>
+
+          <!-- Two Central Midfielders -->
+          <div class="player" style="top:60%;left:35%;">CM</div>
+          <div class="player" style="top:60%;left:65%;">CM</div>
+
+          <!-- Central Attacking Midfielder -->
+          <div class="player" style="top:45%;left:50%;">CAM</div>
+
+          <!-- RWB Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- Attacking Scenario Paths -->
+          <svg id="path-attacking-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-1" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FFC107" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 350,300 340,250 330,180" stroke="#FFC107" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-1)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-2" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF8C00" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 320,330 290,300 260,280" stroke="#FF8C00" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-2)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-3" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-3" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#32CD32" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 370,280 375,220 380,180" stroke="#32CD32" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-3)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+            </path>
+          </svg>
+
+          <!-- Defensive Scenario Paths -->
+          <svg id="path-defensive-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-4" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF3333" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 370,400 375,430 380,450" stroke="#FF3333" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-4)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-defensive-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-5" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#DC143C" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 330,380 300,400 280,400" stroke="#DC143C" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-5)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Transition Scenario Paths -->
+          <svg id="path-transition-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-6" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9932CC" />
+              </marker>
+            </defs>
+            <path d="M 360,360 C 350,300 360,240 370,200" stroke="#9932CC" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-6)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-transition-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-7" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#4B0082" />
+              </marker>
+            </defs>
+            <path d="M 360,250 C 350,300 360,340 360,360" stroke="#4B0082" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-7)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Two Strikers -->
+          <div class="player" style="top:30%;left:35%;">ST</div>
+          <div class="player" style="top:30%;left:65%;">ST</div>
+
+          <!-- Movement Labels - Shown/hidden by JavaScript -->
+          <div id="label-attacking-1" class="movement-label" style="display:none; top:30%;left:83%;">Overlap Run</div>
+          <div id="label-attacking-2" class="movement-label" style="display:none; top:47%;left:65%;">Inside Channel Run</div>
+          <div id="label-attacking-3" class="movement-label" style="display:none; top:30%;left:95%;">Wide Support Position</div>
+          
+          <div id="label-defensive-1" class="movement-label" style="display:none; top:74%;left:96%;">Defensive Recovery</div>
+          <div id="label-defensive-2" class="movement-label" style="display:none; top:67%;left:70%;">Press Opposition</div>
+          
+          <div id="label-transition-1" class="movement-label" style="display:none; top:34%;left:93%;">Quick Counter Support</div>
+          <div id="label-transition-2" class="movement-label" style="display:none; top:60%;left:90%;">Return to Position</div>
+        </div>
+      </div>
     </div>
-    <div class="key-item">
-      <div class="key-color" style="background-color: orange;"></div>
-      <span>Inside Channel Run</span>
+  </div>
+
+  <!-- Tabbed Content Detail Section -->
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" onclick="activateTab('description')">Description</div>
+      <div class="tab" onclick="activateTab('instructions')">Player Instructions</div>
+      <div class="tab" onclick="activateTab('tips')">Coaching Tips</div>
     </div>
-    <div class="key-item">
-      <div class="key-color" style="background-color: gold;"></div>
-      <span>Wide Support Position</span>
-    </div>
-    <div class="key-item">
-      <div class="key-color" style="background-color: red;"></div>
-      <span>Defensive Recovery</span>
-    </div>
-    <div class="key-item">
-      <div class="key-color" style="background-color: #ff6666;"></div>
-      <span>Central Coverage</span>
-    </div>
-    <div class="key-item">
-      <div class="key-color" style="background-color: #cc0000;"></div>
-      <span>Wide Pressing</span>
+    
+    <div class="tab-content">
+      <div id="description" class="tab-pane active">
+        <h3 id="scenario-title">Select a Scenario Above</h3>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Right Wing Back (RWB) position.</p>
+        
+        <div id="attacking-content" style="display:none;">
+          <h4>RWB Attacking Movement Patterns</h4>
+          <p>The Right Wing Back is crucial for providing width and attacking support on the right flank in a 3-4-1-2 formation. In attack, they operate in three main ways:</p>
+          <ol>
+            <li><strong>Overlap Run (Yellow Path)</strong> - The RWB makes aggressive forward runs beyond attacking players to create crossing opportunities from advanced areas. This stretches the opposition defense and opens space for teammates.</li>
+            <li><strong>Inside Channel Run (Orange Path)</strong> - When appropriate, the RWB makes diagonal runs into the half-spaces between defense and midfield, creating numerical advantages and passing options in central areas.</li>
+            <li><strong>Wide Support Position (Green Path)</strong> - Sometimes the RWB holds a wide position to maintain the team's width, create passing angles, and provide balance to the attack while being ready to receive switches of play.</li>
+          </ol>
+          <p>These movements are determined by the position of teammates, how the opposition defends, and the phase of possession.</p>
+        </div>
+        
+        <div id="defensive-content" style="display:none;">
+          <h4>RWB Defensive Responsibilities</h4>
+          <p>Defensively, the RWB has crucial responsibilities that balance their attacking freedom:</p>
+          <ol>
+            <li><strong>Defensive Recovery (Red Path)</strong> - When possession is lost, the RWB's first priority is often to quickly track back into a defensive position, forming part of a back-5 alongside the three center backs and opposite wing back.</li>
+            <li><strong>Pressing Opposition (Dark Red Path)</strong> - When the opposition has the ball on the RWB's side, they apply pressure to the ball carrier, attempting to win possession back or force play inside toward central teammates.</li>
+          </ol>
+          <p>The defensive movements of the RWB are critical to preventing the opposition from exploiting wide areas and ensuring the team maintains its defensive shape.</p>
+        </div>
+        
+        <div id="transition-content" style="display:none;">
+          <h4>RWB in Transition Phases</h4>
+          <p>Transitions between defense and attack are moments where the RWB's positioning and decision-making are crucial:</p>
+          <ol>
+            <li><strong>Quick Counter Support (Purple Path)</strong> - When possession is won, the RWB quickly provides width on the right flank, creating an immediate outlet for counter-attacks and stretching the opposition as they attempt to recover.</li>
+            <li><strong>Recovery Run (Dark Purple Path)</strong> - When possession is lost while the RWB is in an advanced position, they must make quick recovery runs to reestablish defensive shape and protect vulnerable spaces.</li>
+          </ol>
+          <p>The RWB's ability to transition quickly between attack and defense is essential to the team's ability to control games and maintain tactical balance.</p>
+        </div>
+      </div>
+      
+      <div id="instructions" class="tab-pane">
+        <h3>RWB Player Instructions</h3>
+        
+        <h4>Attacking Phase</h4>
+        <ul>
+          <li>Provide maximum width on the right side to stretch opposition defense</li>
+          <li>Time forward runs to overlap when appropriate, especially when midfielders have possession</li>
+          <li>Look to deliver quality crosses from advanced positions</li>
+          <li>Create passing triangles with nearby CM and RCB</li>
+          <li>Be available for switches of play from the left side</li>
+          <li>Move inside when the play is developing on the opposite flank</li>
+        </ul>
+        
+        <h4>Defensive Phase</h4>
+        <ul>
+          <li>Quickly recover defensive position when possession is lost</li>
+          <li>Form part of a back-5 when defending deep</li>
+          <li>Press aggressively when opposition attacks down your side</li>
+          <li>Cover for the RCB if they are drawn out of position</li>
+          <li>Tuck inside to maintain compact defensive shape when ball is on opposite flank</li>
+          <li>Communicate constantly with the RCB about marking responsibilities</li>
+        </ul>
+        
+        <h4>Transition Phase</h4>
+        <ul>
+          <li>React immediately to possession changes in either direction</li>
+          <li>When possession is won, provide quick width for counter-attacks</li>
+          <li>When possession is lost, make immediate recovery runs</li>
+          <li>Look for quick outlet passes from defenders to launch counters</li>
+          <li>Be prepared to counter-press when possession is lost in the attacking third</li>
+          <li>Recognize when to commit forward and when to maintain defensive security</li>
+        </ul>
+      </div>
+      
+      <div id="tips" class="tab-pane">
+        <h3>Coaching Tips for the RWB Position</h3>
+        
+        <h4>Player Selection</h4>
+        <p>The ideal RWB in this system should possess:</p>
+        <ul>
+          <li>Exceptional stamina and work rate to cover the entire flank</li>
+          <li>Good pace to recover defensively and exploit space in attack</li>
+          <li>Strong crossing ability from various positions</li>
+          <li>Tactical awareness to know when to attack and when to defend</li>
+          <li>Solid one-on-one defensive skills</li>
+          <li>Ability to play in tight spaces under pressure</li>
+        </ul>
+        
+        <h4>Training Focus</h4>
+        <p>Develop these key aspects in training:</p>
+        <ul>
+          <li>Overlapping runs and timing with wingers/inside forwards</li>
+          <li>Crossing from different angles and positions</li>
+          <li>Quick transition drills focusing on recovery runs</li>
+          <li>Combination play with central midfielders and center backs</li>
+          <li>Defensive positioning and one-on-one defending</li>
+          <li>Endurance training to maintain performance throughout matches</li>
+        </ul>
+        
+        <h4>Game Management</h4>
+        <p>Adjustments based on match situations:</p>
+        <ul>
+          <li>Against stronger opposition: RWB may need to be more conservative and focus on defensive solidity</li>
+          <li>When leading: Consider adjusting the RWB to maintain defensive shape rather than committing forward</li>
+          <li>When chasing a goal: Encourage more aggressive overlapping runs and final third entries</li>
+          <li>Against teams with dangerous wingers: RWB should focus more on tracking their movements</li>
+          <li>In possession-dominant games: RWB can position higher up the pitch, almost as a winger</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
 
-<div style="margin-top: 20px; padding: 15px; background-color: #fff; border-radius: 5px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
-  <h3>RWB Comprehensive Movement Guide</h3>
-  
-  <h4>Attacking Movements:</h4>
-  <ul>
-    <li><strong>Overlap Run (Yellow):</strong> Sprint forward beyond the wide midfielder to receive passes in advanced areas. Create crossing opportunities from the byline.</li>
-    <li><strong>Inside Channel Run (Orange):</strong> Make diagonal runs into the half-spaces between opposition defense and midfield, creating passing lanes and attacking options.</li>
-    <li><strong>Wide Support Position (Gold):</strong> Hold width to stretch opposition defense while maintaining possession, providing passing options and recycling play when needed.</li>
-  </ul>
-  
-  <h4>Defensive Movements:</h4>
-  <ul>
-    <li><strong>Defensive Recovery (Red):</strong> Quickly track back to form part of a back-5 when possession is lost, closing spaces behind and protecting the defensive third.</li>
-    <li><strong>Central Coverage (Light Red):</strong> Shift inward to provide defensive cover when ball is on the opposite side, maintaining team shape and preventing central penetration.</li>
-    <li><strong>Wide Pressing (Dark Red):</strong> Apply pressure to opposition wide players when they receive the ball, forcing play inside toward your defensive midfielders or forcing errors.</li>
-  </ul>
-  
-  <h4>Transition Responsibilities:</h4>
-  <ul>
-    <li><strong>Defense to Attack:</strong> Be ready to quickly advance forward when possession is won, providing immediate width and attacking outlet.</li>
-    <li><strong>Attack to Defense:</strong> React immediately when possession is lost, choose between counter-pressing or recovering defensive position based on team strategy.</li>
-  </ul>
+<!-- Navigation Links -->
+<div class="nav-section">
+  <h3>Navigation</h3>
+  <div class="nav-buttons">
+    <a href="index.html" class="nav-btn">Formation Overview</a>
+    <a href="lwb.html" class="nav-btn">LWB Position</a>
+    <a href="cam.html" class="nav-btn">CAM Position</a>
+    <!-- Other position links will be added here as they are created -->
+  </div>
 </div>
 
-<p style="margin-top: 20px;">
-  <a href="index.html" style="display: inline-block; padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">Back to Formation Overview</a>
-</p>
+<script>
+  // Show specific scenario
+  function showScenario(scenario) {
+    // Reset all paths and labels
+    document.querySelectorAll('.movement-path').forEach(path => {
+      path.style.display = 'none';
+    });
+    document.querySelectorAll('.movement-label').forEach(label => {
+      label.style.display = 'none';
+    });
+    
+    // Remove active class from all scenarios
+    document.querySelectorAll('.scenario').forEach(s => {
+      s.classList.remove('active');
+    });
+    
+    // Add active class to selected scenario
+    document.querySelector(`.scenario[onclick="showScenario('${scenario}')"]`).classList.add('active');
+    
+    // Hide all content sections
+    document.getElementById('attacking-content').style.display = 'none';
+    document.getElementById('defensive-content').style.display = 'none';
+    document.getElementById('transition-content').style.display = 'none';
+    
+    // Show relevant paths based on scenario
+    if (scenario === 'attacking') {
+      document.getElementById('path-attacking-1').style.display = 'block';
+      document.getElementById('path-attacking-2').style.display = 'block';
+      document.getElementById('path-attacking-3').style.display = 'block';
+      document.getElementById('label-attacking-1').style.display = 'block';
+      document.getElementById('label-attacking-2').style.display = 'block';
+      document.getElementById('label-attacking-3').style.display = 'block';
+      document.getElementById('attacking-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Attacking Movements';
+      document.getElementById('scenario-description').textContent = 'The RWB provides width and offensive support on the right flank, creating crossing opportunities and stretching the opposition defense.';
+    } 
+    else if (scenario === 'defensive') {
+      document.getElementById('path-defensive-1').style.display = 'block';
+      document.getElementById('path-defensive-2').style.display = 'block';
+      document.getElementById('label-defensive-1').style.display = 'block';
+      document.getElementById('label-defensive-2').style.display = 'block';
+      document.getElementById('defensive-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Defensive Duties';
+      document.getElementById('scenario-description').textContent = 'The RWB has important defensive responsibilities, tracking back to form a back-5 and pressing opponents on their flank.';
+    }
+    else if (scenario === 'transition') {
+      document.getElementById('path-transition-1').style.display = 'block';
+      document.getElementById('path-transition-2').style.display = 'block';
+      document.getElementById('label-transition-1').style.display = 'block';
+      document.getElementById('label-transition-2').style.display = 'block';
+      document.getElementById('transition-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Transition Play';
+      document.getElementById('scenario-description').textContent = 'The RWB must adapt quickly during transitions, providing width for counter-attacks and recovering position when possession is lost.';
+    }
+  }
+  
+  // Tab functionality
+  function activateTab(tabId) {
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Activate selected tab
+    document.querySelector(`.tab[onclick="activateTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+  
+  // Initialize with attacking scenario selected by default
+  window.onload = function() {
+    showScenario('attacking');
+  };
+</script>
 
 </body>
 </html>
