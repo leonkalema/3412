@@ -3,287 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sundbyberg FC - 3-4-1-2 Formation Guide</title>
+  <title>Sundbyberg FC - Secure Access</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       background-color: #f0f0f0;
-      padding: 10px;
-      max-width: 1000px;
+      padding: 20px;
+      max-width: 600px;
       margin: 0 auto;
       color: #333;
     }
-    .header {
-      margin-bottom: 20px;
-      padding: 20px;
-      background-color: #0D6EFD;
-      color: white;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    .login-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: 50px;
     }
-    .header h1 {
+    .logo {
+      margin-bottom: 20px;
+    }
+    .logo h1 {
+      color: #0D6EFD;
       margin: 0;
       font-size: 28px;
     }
-    .header p {
+    .logo p {
       margin: 5px 0 0;
       font-size: 16px;
-      opacity: 0.9;
+      color: #666;
     }
-    .coach {
-      font-style: italic;
-      margin-top: 10px;
-    }
-    #pitch-container {
-      position: relative;
-      max-width: 500px;
-      margin: 0 auto 30px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    #pitch {
-      position: relative;
-      width: 400px;
-      height: 600px;
-      margin: auto;
-      background-color: #6da544;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
-    .line {
-      position: absolute;
-      background-color: #fff;
-    }
-    .halfway {
-      top: 50%; left: 0;
-      width: 100%; height: 2px;
-    }
-    .circle {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 80px; height: 80px;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .player {
-      position: absolute;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background-color: #007bff;
-      color: #fff;
-      font-size: 11px;
-      line-height: 26px;
-      font-weight: bold;
-      z-index: 2;
-      transition: all 0.2s;
-    }
-    .position-link {
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .position-link:hover .player {
-      box-shadow: 0 0 12px rgba(255,193,7,0.8);
-      transform: scale(1.15);
-      z-index: 10;
-    }
-    .position-note {
-      font-size: 12px;
-      color: #555;
-      margin-top: 10px;
-    }
-    
-    /* Formation explanation section */
-    .formation-details {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin: 40px 0;
+    .form-group {
+      margin-bottom: 20px;
       text-align: left;
-      gap: 20px;
     }
-    .formation-details > div {
-      flex: 1;
-      min-width: 300px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
     }
-    .formation-details h3 {
-      color: #0D6EFD;
-      margin-top: 0;
-      border-bottom: 2px solid #f0f0f0;
-      padding-bottom: 10px;
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
     }
-    .formation-details ul {
-      padding-left: 20px;
-    }
-    .formation-details li {
-      margin-bottom: 10px;
-    }
-    
-    /* Position details section */
-    .position-details {
-      margin-top: 40px;
-      padding: 20px;
-      background-color: white;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .position-details h2 {
-      color: #0D6EFD;
-      margin-top: 0;
-    }
-    .position-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .position-btn {
-      display: inline-block;
-      padding: 12px 20px;
+    .login-btn {
       background-color: #0D6EFD;
       color: white;
-      text-decoration: none;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
       border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
       font-weight: bold;
-      transition: all 0.2s;
-      min-width: 120px;
+      transition: background-color 0.2s;
     }
-    .position-btn:hover {
+    .login-btn:hover {
       background-color: #0a58ca;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    .position-description {
-      margin-top: 15px;
+    .error-message {
+      color: #dc3545;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8d7da;
+      border-radius: 4px;
+      display: none;
+    }
+    .hint {
+      margin-top: 20px;
       font-size: 14px;
-      color: #555;
+      color: #6c757d;
     }
-    
-    /* Footer */
+    .hint span {
+      font-weight: bold;
+    }
     .footer {
-      margin-top: 50px;
-      padding: 20px;
-      background-color: #333;
-      color: white;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    .footer p {
-      margin: 5px 0;
-    }
-    
-    @media(max-width:450px){
-      #pitch{width:90%;height:auto;padding-bottom:150%;}
-      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
-      .formation-details > div {
-        min-width: 100%;
-      }
+      margin-top: 40px;
+      font-size: 12px;
+      color: #777;
     }
   </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>Sundbyberg FC - 3-4-1-2 Formation Guide</h1>
-  <p>Tactical breakdown of positioning and player movement patterns</p>
-  <p class="coach">Coach: Leon Kalema</p>
-</div>
-
-<div id="pitch-container">
-  <h2>Formation Overview</h2>
-  <p>Click on any highlighted position to see detailed movement patterns</p>
-
-  <div id="pitch">
-    <!-- Pitch Lines -->
-    <div class="line halfway"></div>
-    <div class="circle"></div>
-
-    <!-- Goalkeeper -->
-    <div class="player" style="top:90%;left:50%;">GK</div>
-
-    <!-- Three CBs -->
-    <div class="player" style="top:75%;left:20%;">CB</div>
-    <div class="player" style="top:78%;left:50%;">CB</div>
-    <div class="player" style="top:75%;left:80%;">CB</div>
-
-    <!-- Wingbacks -->
-    <a href="lwb.html" class="position-link">
-      <div class="player" style="top:60%;left:10%;">LWB</div>
-    </a>
-    
-    <a href="rwb.html" class="position-link">
-      <div class="player" style="top:60%;left:90%;">RWB</div>
-    </a>
-
-    <!-- Two Central Midfielders -->
-    <div class="player" style="top:60%;left:35%;">CM</div>
-    <div class="player" style="top:60%;left:65%;">CM</div>
-
-    <!-- Central Attacking Midfielder -->
-    <a href="cam.html" class="position-link">
-      <div class="player" style="top:45%;left:50%;">CAM</div>
-    </a>
-
-    <!-- Two Strikers -->
-    <div class="player" style="top:30%;left:35%;">ST</div>
-    <div class="player" style="top:30%;left:65%;">ST</div>
+<div class="login-container">
+  <div class="logo">
+    <h1>Sundbyberg FC</h1>
+    <p>Tactical Formation Guide</p>
   </div>
   
-  <p class="position-note"><em>Hover over positions with movement guides (LWB, RWB, CAM) to highlight, then click to see detailed analysis</em></p>
-</div>
-
-<!-- Formation Details Section -->
-<div class="formation-details">
-  <div>
-    <h3>Key Principles</h3>
-    <ul>
-      <li><strong>Defensive Solidity</strong> - Three center backs provide a stable defensive foundation, allowing wingbacks to push forward.</li>
-      <li><strong>Width in Attack</strong> - Wingbacks provide width and crossing options, stretching the opposition defense.</li>
-      <li><strong>Central Overload</strong> - The diamond midfield (2 CMs, 1 CAM) creates numerical advantages in central areas.</li>
-      <li><strong>Strike Partnerships</strong> - Two forwards work together to create space and finishing opportunities.</li>
-    </ul>
+  <div id="error-message" class="error-message">
+    Incorrect password. Please try again.
   </div>
   
-  <div>
-    <h3>Formation Strengths</h3>
-    <ul>
-      <li><strong>Defensive Coverage</strong> - Back three plus defensive midfielders provide excellent central protection.</li>
-      <li><strong>Attacking Width</strong> - Wingbacks create width when attacking, allowing for various crossing angles.</li>
-      <li><strong>Tactical Flexibility</strong> - Can easily switch between attacking (3-4-1-2) and defending (5-2-1-2) shapes.</li>
-      <li><strong>Creative Freedom</strong> - CAM has license to find spaces and create opportunities for forwards.</li>
-    </ul>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter team password">
+  </div>
+  
+  <button class="login-btn" onclick="checkPassword()">Access Formation Guide</button>
+  
+  <div class="hint">
+    <p>This resource contains confidential team tactics.</p>
+    <p>If you're a team member and have forgotten the password, please contact <span>Coach Leon</span>.</p>
   </div>
 </div>
 
-<!-- Position Details Section -->
-<div class="position-details">
-  <h2>Detailed Position Guides</h2>
-  <p>Select a position below to see comprehensive movement patterns, player instructions, and coaching tips</p>
-  
-  <div class="position-buttons">
-    <a href="lwb.html" class="position-btn">LWB</a>
-    <a href="rwb.html" class="position-btn">RWB</a>
-    <a href="cam.html" class="position-btn">CAM</a>
-    <!-- Future position buttons will be added here -->
-  </div>
-  
-  <p class="position-description">Each position guide includes interactive visualizations of attacking, defensive, and transition movements.</p>
-</div>
-
-<!-- Footer -->
 <div class="footer">
-  <p>Sundbyberg FC Formation Guide - Tactical Analysis</p>
-  <p>Developed for team training and player education</p>
-  <p>Coach: Leon Kalema</p>
+  <p>Sundbyberg FC &copy; 2025 | Team Confidential</p>
 </div>
+
+<script>
+  function checkPassword() {
+    // This is a simple client-side password. For a production system, you would use server-side authentication.
+    const correctPassword = "sfc3412"; // You can change this to your desired password
+    const enteredPassword = document.getElementById('password').value;
+    
+    if (enteredPassword === correctPassword) {
+      // Redirect to the dashboard on correct password
+      window.location.href = "dashboard.html";
+    } else {
+      // Show error message
+      document.getElementById('error-message').style.display = 'block';
+    }
+  }
+  
+  // Allow Enter key to submit
+  document.getElementById('password').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      checkPassword();
+    }
+  });
+</script>
 
 </body>
 </html>
