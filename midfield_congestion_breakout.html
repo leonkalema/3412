@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Midfield Congestion Breakout (3-4-1-2)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #fafafa;
+      margin: 20px;
+    }
+    #pitch {
+      position: relative;
+      width: 400px;
+      height: 320px;
+      background-color: #6da544;
+      margin: auto;
+      border: 2px solid #333;
+    }
+    .zone {
+      position: absolute;
+      width: 100%;
+      border-top: 1px dashed #fff;
+      border-bottom: 1px dashed #fff;
+      height: 33.33%;
+    }
+    .zone.midfield {
+      top: 33.33%;
+      background-color: rgba(255,255,255,0.2);
+    }
+    .player {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      line-height: 22px;
+      color: #fff;
+    }
+    .blue {background-color: #007bff;}
+    .red {background-color: #dc3545;}
+    .neutral {background-color: #ffc107; color:#333;}
+    .arrow {
+      position: absolute;
+      width:0;height:0;
+      border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid cyan;
+      opacity:0.8;animation:move 2s infinite ease-in-out;
+    }
+    @keyframes move {
+      0%{opacity:0;transform:translate(0,0);}
+      50%{opacity:1;transform:translate(20px,-20px);}
+      100%{opacity:0;transform:translate(40px,-40px);}
+    }
+    @media(max-width:450px){
+      #pitch{width:100%;height:auto;padding-bottom:80%;}
+      .player{width:5%;height:5%;font-size:10px;}
+    }
+  </style>
+</head>
+<body>
+
+<h3>"Midfield Congestion Breakout" (3-4-1-2)</h3>
+
+<div id="pitch">
+  <div class="zone midfield"></div>
+
+  <!-- Blue Team (3-4-1-2) -->
+  <!-- Defenders -->
+  <div class="player blue" style="top:85%;left:20%;">Esrom</div>
+  <div class="player blue" style="top:85%;left:50%;">Minas</div>
+  <div class="player blue" style="top:85%;left:80%;">Mustafa</div>
+
+  <!-- Central Midfielders (Congested midfield zone) -->
+  <div class="player blue" style="top:50%;left:35%;">Fezier</div>
+  <div class="player blue" style="top:50%;left:50%;">Sulle</div>
+  <div class="player blue" style="top:40%;left:45%;">Jonathan</div>
+
+  <!-- Strikers -->
+  <div class="player blue" style="top:15%;left:40%;">Joel</div>
+  <div class="player blue" style="top:15%;left:60%;">Xtian</div>
+
+  <!-- Neutral Wingbacks (wide) -->
+  <div class="player neutral" style="top:50%;left:5%;">Medul</div>
+  <div class="player neutral" style="top:50%;left:90%;">Hiyab</div>
+
+  <!-- Red Team (Opponents congesting midfield) -->
+  <div class="player red" style="top:55%;left:40%;">R1</div>
+  <div class="player red" style="top:55%;left:60%;">R2</div>
+  <div class="player red" style="top:45%;left:40%;">R3</div>
+  <div class="player red" style="top:45%;left:60%;">R4</div>
+
+  <!-- Passing Arrows (Demonstrating breakout) -->
+  <div class="arrow" style="top:50%;left:50%;transform:rotate(-135deg);"></div>
+  <div class="arrow" style="top:50%;left:50%;transform:rotate(45deg);animation-delay:0.5s;"></div>
+  <div class="arrow" style="top:45%;left:45%;transform:rotate(-90deg);animation-delay:1s;"></div>
+</div>
+
+<p style="margin-top:10px;"><strong>Key:</strong> 🔵 Blue (Your team) | 🔴 Red (Opponent) | 🟡 Neutral Wingbacks | ↗️ Arrows = Breakout passes</p>
+
+<p>
+<strong>Example Situation:</strong><br>
+🔵 Your midfielders (Sulle, Frezier, Jonathan) recognize midfield congestion quickly.<br>
+🔵 They play wide to Hiyab or Medul (wing-backs), or forward passes into Joel and Xtian.<br>
+🔵 Immediately after passing, midfielders move to support quickly, creating overloads.
+</p>
+
+</body>
+</html>
