@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defensive LCM: Positioning and Distribution in 3-4-1-2 System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      padding: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #pitch-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    #pitch {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: auto;
+      background-color: #6da544;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+    .pitch-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .line {
+      position: absolute;
+      background-color: #fff;
+    }
+    .halfway {
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+    }
+    .circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .player {
+      position: absolute;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 11px;
+      line-height: 26px;
+      font-weight: bold;
+      transition: transform 0.3s;
+      z-index: 2;
+    }
+    .lcm {
+      background-color: #3F51B5;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Path visualization */
+    .movement-path {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .movement-label {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    /* Animation controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .control-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .control-btn:hover {
+      background-color: #0056b3;
+    }
+    /* Interactive elements */
+    .scenario {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .scenario:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .scenario.active {
+      border-color: #0D6EFD;
+      box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+    }
+    .scenario.active:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #0D6EFD;
+    }
+    .scenario h4 {
+      margin-top: 0;
+      color: #0D6EFD;
+    }
+    .scenario-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    /* Movement visuals */
+    .movement-arrow {
+      position: absolute;
+      width: 0; 
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 40px solid;
+      opacity: 0.6;
+      transform-origin: bottom center;
+      z-index: 1;
+    }
+    /* Tabbed content */
+    .tab-container {
+      margin-top: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .tab {
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #0D6EFD;
+      color: white;
+    }
+    .tab-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      text-align: left;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Navigation section */
+    .nav-section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 15px;
+      background-color: #0D6EFD;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #0a58ca;
+    }
+    @media(max-width:800px){
+      #pitch-section {
+        flex-direction: column;
+      }
+    }
+    @media(max-width:450px){
+      #pitch{width:90%;height:auto;padding-bottom:150%;}
+      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
+      .movement-label{font-size:8px;}
+    }
+  </style>
+</head>
+<body>
+
+<h2>Defensive Left Central Midfielder (LCM) in 3-4-1-2 Formation</h2>
+<p>The Left Central Midfielder operates primarily as a defensive anchor, maintaining central positioning to support the center backs and provide stability to the midfield. This disciplined role requires excellent positional awareness, secure passing, and tactical intelligence to shield the defense and initiate attacking movements.</p>
+
+<div id="main-container">
+  <!-- Interactive Scenarios -->
+  <div class="scenario-container">
+    <div class="scenario" onclick="showScenario('defensive')">
+      <h4>Defensive Positioning</h4>
+      <p>The LCM maintains central positioning to shield the defense, intercept passes, and provide support to the CBs.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('distribution')">
+      <h4>Ball Distribution</h4>
+      <p>Using short passing to CBs and wider distribution to wingbacks, the LCM helps recycle possession and build attacks.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('transition')">
+      <h4>Transition Control</h4>
+      <p>During transitions, the LCM provides a secure passing option, controls tempo, and maintains defensive shape.</p>
+    </div>
+  </div>
+  
+  <!-- Pitch Visualization -->
+  <div id="pitch-section">
+    <div style="max-width: 500px; margin: 0 auto;">
+      <div class="pitch-label">Defensive LCM Positioning & Distribution</div>
+      <div id="pitch-movement">
+        <div id="pitch">
+          <!-- Pitch Lines -->
+          <div class="line halfway"></div>
+          <div class="circle"></div>
+
+          <!-- Goalkeeper -->
+          <div class="player" style="top:90%;left:50%;">GK</div>
+
+          <!-- Three CBs -->
+          <div class="player" style="top:75%;left:20%;">LCB</div>
+          <div class="player" style="top:78%;left:50%;">CB</div>
+          <div class="player" style="top:75%;left:80%;">RCB</div>
+
+          <!-- Wingbacks -->
+          <div class="player" style="top:60%;left:10%;">LWB</div>
+          <div class="player" style="top:60%;left:90%;">RWB</div>
+
+          <!-- Central Midfielders -->
+          <div id="lcm-move" class="player lcm" style="top:60%;left:35%;">LCM</div>
+          <div class="player" style="top:60%;left:65%;">RCM</div>
+          
+          <!-- CAM -->
+          <div class="player" style="top:40%;left:50%;background-color:#FFC107;">CAM</div>
+          
+          <!-- Strikers -->
+          <div class="player" style="top:25%;left:35%;">ST</div>
+          <div class="player" style="top:25%;left:65%;">ST</div>
+
+          <!-- LCM Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- Defensive Positioning Paths -->
+          <svg id="path-defensive-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                <path d="M0,0 L4,2 L0,4" fill="#3F51B5" />
+              </marker>
+            </defs>
+            <path d="M140,360 Q150,400 140,450" stroke="#3F51B5" stroke-width="3" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="1, 0" stroke-opacity="0.6">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-defensive-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead2" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                <path d="M0,0 L4,2 L0,4" fill="#1A237E" />
+              </marker>
+            </defs>
+            <path d="M140,360 Q100,380 80,380" stroke="#1A237E" stroke-width="3" fill="none" marker-end="url(#arrowhead2)" stroke-dasharray="1, 0" stroke-opacity="0.6">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <svg id="path-distribution-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead3" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+                <path d="M0,0 L4,2 L0,4" fill="green" />
+              </marker>
+            </defs>
+            <path d="M140,360 Q100,320 80,320" stroke="green" stroke-width="3" fill="none" marker-end="url(#arrowhead3)" stroke-dasharray="1, 0" stroke-opacity="0.6">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+            </path>
+          </svg>
+
+          <!-- Defensive Scenario Paths -->
+          <svg id="path-defensive-3" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+          <svg id="path-defensive-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-4" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF3333" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 250,390 240,420 230,450" stroke="#FF3333" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-4)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-defensive-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-5" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#DC143C" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 280,390 300,410 310,430" stroke="#DC143C" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-5)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Transition Scenario Paths -->
+          <svg id="path-transition-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-6" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9932CC" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 240,330 220,310 210,280" stroke="#9932CC" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-6)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-transition-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-7" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#4B0082" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 290,340 320,330 340,310" stroke="#4B0082" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-7)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- No duplicate strikers here -->
+
+          <!-- Movement Labels - Shown/hidden by JavaScript -->
+          <div id="label-defensive-1" class="movement-label" style="display:none; top:70%;left:35%;">Support CBs</div>
+          <div id="label-defensive-2" class="movement-label" style="display:none; top:63%;left:20%;">Cover Wide</div>
+          
+          <div id="label-distribution-1" class="movement-label" style="display:none; top:53%;left:20%;">CB Pass</div>
+          <div id="label-distribution-2" class="movement-label" style="display:none; top:50%;left:45%;">Central Pass</div>
+          <div id="label-distribution-3" class="movement-label" style="display:none; top:35%;left:15%;">Wide Pass</div>
+          
+          <div id="label-transition-1" class="movement-label" style="display:none; top:50%;left:35%;">Maintain Position</div>
+          <div id="label-transition-2" class="movement-label" style="display:none; top:60%;left:45%;">Provide Outlet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabbed Content Detail Section -->
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" onclick="activateTab('description')">Description</div>
+      <div class="tab" onclick="activateTab('instructions')">Player Instructions</div>
+      <div class="tab" onclick="activateTab('tips')">Coaching Tips</div>
+    </div>
+    
+    <div class="tab-content">
+      <div id="description" class="tab-pane active">
+        <h3 id="scenario-title">Select a Scenario Above</h3>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Right Central Midfielder (RCM) box-to-box position.</p>
+        
+        <div id="defensive-content">
+          <h4>LCM Defensive Positioning</h4>
+          <p>The defensive LCM's primary responsibility is to maintain positional discipline and provide defensive stability:</p>
+          <ol>
+            <li><strong>Support for CBs:</strong> Stays centrally positioned to provide a consistent passing option for the center backs, allowing for secure build-up play</li>
+            <li><strong>Screening the defense:</strong> Positions between opposition attackers and the defensive line to intercept passes and protect vulnerable areas</li>
+            <li><strong>Covering wide areas:</strong> Shifts laterally to provide cover when necessary, particularly on the left side when the LWB advances</li>
+            <li><strong>Maintaining shape:</strong> Rarely pushes forward, instead focusing on maintaining the team's defensive structure and balance</li>
+            <li><strong>Defensive discipline:</strong> Shows excellent positional awareness and rarely leaves the central areas unprotected</li>
+          </ol>
+          <p>The LCM's disciplined positioning provides the foundation for the team's defensive stability and allows other midfielders more freedom to attack.</p>
+        </div>
+        
+        <div id="distribution-content" style="display:none;">
+          <h4>LCM Ball Distribution</h4>
+          <p>The LCM plays a crucial role in ball circulation and initiating attacks through intelligent distribution:</p>
+          <ol>
+            <li><strong>Short passes to CBs:</strong> Offers consistent support for center backs, providing safe passing options under pressure and helping to recycle possession</li>
+            <li><strong>Central progression:</strong> Makes secure vertical passes to the CAM when space opens up, maintaining possession while advancing play</li>
+            <li><strong>Wide distribution:</strong> Plays diagonal passes to wingbacks to switch play and exploit space on the opposite flank</li>
+            <li><strong>Safe circulation:</strong> Prioritizes ball retention over risky progressive passes, ensuring the team maintains control of possession</li>
+            <li><strong>Tempo control:</strong> Dictates the pace of play by knowing when to speed up attacks and when to slow down and retain possession</li>
+          </ol>
+          <p>The LCM's intelligent distribution helps the team maintain possession, control the game's tempo, and create attacking opportunities without compromising defensive security.</p>
+        </div>
+        
+        <div id="transition-content" style="display:none;">
+          <h4>LCM in Transitions</h4>
+          <p>During transitions, the LCM provides stability and control rather than making aggressive forward movements:</p>
+          <ol>
+            <li><strong>Defensive transitions:</strong> Maintains central positioning when possession is lost, focusing on defensive cover rather than counter-pressing high up the pitch</li>
+            <li><strong>Secure outlet:</strong> Provides a consistent passing option for defenders when under pressure, helping the team retain possession</li>
+            <li><strong>Positional recovery:</strong> Prioritizes getting back into defensive shape during opposition counter-attacks instead of pressing aggressively</li>
+            <li><strong>Controlled progression:</strong> When possession is won, focuses on secure distribution rather than making forward runs, allowing the team to build attacks methodically</li>
+            <li><strong>Organization:</strong> Communicates with teammates to ensure defensive solidity and maintain team shape during transitional moments</li>
+          </ol>
+          <p>The LCM's disciplined approach during transitions provides the team with stability and control, allowing other players to take more attacking risks knowing there is defensive security behind them.</p>
+        </div>
+      </div>
+      
+      <div id="instructions" class="tab-pane">
+        <h3>LCM (Defensive) Player Instructions</h3>
+        
+        <h4>Defensive Phase</h4>
+        <ul>
+          <li>Maintain central positioning to shield the defense</li>
+          <li>Provide constant support to center backs with simple passing options</li>
+          <li>Screen passing lanes to opposition forwards</li>
+          <li>Stay disciplined positionally and avoid being drawn out of position</li>
+          <li>Cover spaces when CBs step out to engage opposition players</li>
+          <li>Mark opposition players who enter the central areas</li>
+          <li>Block passing lanes to opposition attackers between the lines</li>
+          <li>Provide defensive balance when other midfielders push forward</li>
+          <li>Communicate with defensive players to maintain team shape</li>
+          <li>Prioritize defensive security over joining attacks</li>
+        </ul>
+        
+        <h4>Distribution Phase</h4>
+        <ul>
+          <li>Offer short, secure passing options to the center backs</li>
+          <li>Distribute the ball calmly under pressure</li>
+          <li>Switch play to the opposite flank with diagonal passes</li>
+          <li>Play simple forward passes to the CAM when space is available</li>
+          <li>Support the LWB with short combinations to retain possession</li>
+          <li>Control the tempo of play based on game situation</li>
+          <li>Avoid risky passes that could lead to turnovers in dangerous areas</li>
+          <li>Recycle possession when progressive options aren't available</li>
+          <li>Use body position to protect the ball and maintain possession</li>
+          <li>Execute accurate long-range passes to switch the point of attack when appropriate</li>
+        </ul>
+        
+        <h4>Transition Phase</h4>
+        <ul>
+          <li>Maintain central positioning during defensive transitions</li>
+          <li>Be a safe, reliable passing option during periods of pressure</li>
+          <li>Focus on defensive recovery rather than aggressive counter-pressing</li>
+          <li>Guide teammates into defensive positions during transitions</li>
+          <li>Help slow down opposition counter-attacks with strategic positioning</li>
+          <li>Prioritize defensive shape over joining counter-attacks</li>
+          <li>Provide security behind more attacking players</li>
+          <li>Control possession when the team needs to reset after regaining the ball</li>
+          <li>Make simple lateral or backward passes to maintain possession when under pressure</li>
+          <li>Fill gaps that appear in midfield during transitional moments</li>
+        </ul>
+      </div>
+      
+      <div id="tips" class="tab-pane">
+        <h3>Coaching Tips for the Defensive LCM Position</h3>
+        
+        <h4>Player Selection</h4>
+        <p>The ideal defensive LCM in the 3-4-1-2 system should possess:</p>
+        <ul>
+          <li>Excellent positional awareness and discipline to maintain defensive shape</li>
+          <li>Strong passing ability, particularly short and medium-range distribution</li>
+          <li>Good defensive reading of the game and interception skills</li>
+          <li>Physical strength to win duels in central areas</li>
+          <li>Tactical intelligence to understand when to hold position and when to cover</li>
+          <li>Composure under pressure when receiving passes in tight areas</li>
+          <li>Communication skills to organize and direct teammates</li>
+          <li>Discipline to prioritize defensive responsibilities over attacking impulses</li>
+          <li>Game intelligence to control tempo and recognize danger</li>
+        </ul>
+        
+        <h4>Training Focus</h4>
+        <p>Develop these key aspects in training for the defensive LCM:</p>
+        <ul>
+          <li>Positional drills focusing on maintaining central defensive shape</li>
+          <li>Passing exercises emphasizing short, accurate distribution under pressure</li>
+          <li>Defensive screening drills to practice shielding the back line</li>
+          <li>Interception and anticipation exercises to develop reading of the game</li>
+          <li>Practice receiving with back to goal and distributing quickly</li>
+          <li>Tactical sessions on when to drop deep versus when to hold midfield position</li>
+          <li>Possession games focusing on ball retention and secure circulation</li>
+          <li>Communication exercises to improve organization skills</li>
+          <li>Video analysis of elite defensive midfielders (e.g., Busquets, Rodri, Fabinho)</li>
+          <li>Small-sided games with emphasis on defensive positioning and ball circulation</li>
+        </ul>
+        
+        <h4>Tactical Adaptations</h4>
+        <ul>
+          <li>Against possession-based teams: Drop deeper to form a compact block with center backs and focus on intercepting through passes</li>
+          <li>Against direct teams: Position to win second balls and prevent opposition from building attacks through the middle</li>
+          <li>When leading: Focus entirely on defensive security, limiting forward passes to safer options</li>
+          <li>When chasing a goal: Maintain defensive position but look for more progressive passing opportunities</li>
+          <li>Against teams with strong #10: Position closer to center backs to minimize space between the lines</li>
+          <li>Against high-pressing teams: Offer more frequent short passing options to help play through the press</li>
+          <li>Against counter-attacking teams: Maintain deeper positioning and prioritize defensive cover</li>
+          <li>In build-up play: Position between opposition pressing lines to create passing angles for the defense</li>
+          <li>In possession-dominant games: Focus on ball circulation and switching play to create openings</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Links -->
+<div class="nav-section">
+  <h3>Navigation</h3>
+  <div class="nav-buttons">
+    <a href="dashboard.html" class="nav-btn">Formation Overview</a>
+    <a href="lwb.html" class="nav-btn">LWB Position</a>
+    <a href="rwb.html" class="nav-btn">RWB Position</a>
+    <!-- Other position links will be added here as they are created -->
+  </div>
+</div>
+
+<script>
+  // Show specific scenario
+  function showScenario(scenario) {
+    // Reset all paths and labels
+    document.querySelectorAll('.movement-path').forEach(path => {
+      path.style.display = 'none';
+    });
+    document.querySelectorAll('.movement-label').forEach(label => {
+      label.style.display = 'none';
+    });
+    
+    // Remove active class from all scenarios
+    document.querySelectorAll('.scenario').forEach(s => {
+      s.classList.remove('active');
+    });
+    
+    // Add active class to selected scenario
+    document.querySelector(`.scenario[onclick="showScenario('${scenario}')"]`).classList.add('active');
+    
+    // Hide all content sections
+    document.getElementById('defensive-content').style.display = 'none';
+    document.getElementById('distribution-content').style.display = 'none';
+    document.getElementById('transition-content').style.display = 'none';
+    
+    // Show relevant paths based on scenario
+    if (scenario === 'defensive') {
+      document.getElementById('path-defensive-1').style.display = 'block';
+      document.getElementById('path-defensive-2').style.display = 'block';
+      document.getElementById('label-defensive-1').style.display = 'block';
+      document.getElementById('label-defensive-2').style.display = 'block';
+      document.getElementById('defensive-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Defensive Positioning';
+      document.getElementById('scenario-description').textContent = 'The LCM maintains central positioning to shield the defense and support the CBs.';
+    } 
+    else if (scenario === 'distribution') {
+      document.getElementById('path-distribution-1').style.display = 'block';
+      document.getElementById('path-distribution-2').style.display = 'block';
+      document.getElementById('path-distribution-3').style.display = 'block';
+      document.getElementById('label-distribution-1').style.display = 'block';
+      document.getElementById('label-distribution-2').style.display = 'block';
+      document.getElementById('label-distribution-3').style.display = 'block';
+      document.getElementById('distribution-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Ball Distribution';
+      document.getElementById('scenario-description').textContent = 'The LCM provides short passing options to CBs and helps build attacks with secure distribution.';
+    }
+    else if (scenario === 'transition') {
+      document.getElementById('path-transition-1').style.display = 'block';
+      document.getElementById('path-transition-2').style.display = 'block';
+      document.getElementById('label-transition-1').style.display = 'block';
+      document.getElementById('label-transition-2').style.display = 'block';
+      document.getElementById('transition-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Transition Control';
+      document.getElementById('scenario-description').textContent = 'The defensive LCM maintains shape during transitions and provides a secure passing option to retain possession.';
+    }
+  }
+  
+  // Tab functionality
+  function activateTab(tabId) {
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Activate selected tab
+    document.querySelector(`.tab[onclick="activateTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+  
+  // Initialize with defensive scenario selected by default
+  window.onload = function() {
+    showScenario('defensive');
+  };
+</script>
+
+</body>
+</html>

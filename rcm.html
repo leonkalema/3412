@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Box-to-Box RCM: Movements and Responsibilities in 3-4-1-2 System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      padding: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #pitch-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    #pitch {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: auto;
+      background-color: #6da544;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+    .pitch-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .line {
+      position: absolute;
+      background-color: #fff;
+    }
+    .halfway {
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+    }
+    .circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .player {
+      position: absolute;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 11px;
+      line-height: 26px;
+      font-weight: bold;
+      transition: transform 0.3s;
+      z-index: 2;
+    }
+    .rcm {
+      background-color: #ff5722;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Path visualization */
+    .movement-path {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .movement-label {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    /* Animation controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .control-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .control-btn:hover {
+      background-color: #0056b3;
+    }
+    /* Interactive elements */
+    .scenario {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .scenario:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .scenario.active {
+      border-color: #0D6EFD;
+      box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+    }
+    .scenario.active:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #0D6EFD;
+    }
+    .scenario h4 {
+      margin-top: 0;
+      color: #0D6EFD;
+    }
+    .scenario-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    /* Movement visuals */
+    .movement-arrow {
+      position: absolute;
+      width: 0; 
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 40px solid;
+      opacity: 0.6;
+      transform-origin: bottom center;
+      z-index: 1;
+    }
+    /* Tabbed content */
+    .tab-container {
+      margin-top: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .tab {
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #0D6EFD;
+      color: white;
+    }
+    .tab-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      text-align: left;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Navigation section */
+    .nav-section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 15px;
+      background-color: #0D6EFD;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #0a58ca;
+    }
+    @media(max-width:800px){
+      #pitch-section {
+        flex-direction: column;
+      }
+    }
+    @media(max-width:450px){
+      #pitch{width:90%;height:auto;padding-bottom:150%;}
+      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
+      .movement-label{font-size:8px;}
+    }
+  </style>
+</head>
+<body>
+
+<h2>Box-to-Box Right Central Midfielder (RCM) in 3-4-1-2 Formation</h2>
+<p>The Right Central Midfielder operates as a dynamic box-to-box player, covering large areas of the pitch with equal responsibility for attacking and defensive phases. This versatile role requires high stamina, tactical intelligence, and technical ability to transition between phases effectively.</p>
+
+<div id="main-container">
+  <!-- Interactive Scenarios -->
+  <div class="scenario-container">
+    <div class="scenario" onclick="showScenario('attacking')">
+      <h4>Forward Runs</h4>
+      <p>The box-to-box RCM makes dynamic attacking runs from deep, providing additional goal threat and creative options.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('transition')">
+      <h4>Transition Play</h4>
+      <p>The RCM excels in transitions by rapidly switching between defensive and offensive duties, becoming the team's connection point.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('defensive')">
+      <h4>Defensive Support</h4>
+      <p>A key defensive asset, the RCM tracks back, applies pressure, and plugs gaps in midfield to maintain defensive solidity.</p>
+    </div>
+  </div>
+  
+  <!-- Pitch Visualization -->
+  <div id="pitch-section">
+    <div style="max-width: 500px; margin: 0 auto;">
+      <div class="pitch-label">Box-to-Box RCM Movement Patterns</div>
+      <div id="pitch-movement">
+        <div id="pitch">
+          <!-- Pitch Lines -->
+          <div class="line halfway"></div>
+          <div class="circle"></div>
+
+          <!-- Goalkeeper -->
+          <div class="player" style="top:90%;left:50%;">GK</div>
+
+          <!-- Three CBs -->
+          <div class="player" style="top:75%;left:20%;">LCB</div>
+          <div class="player" style="top:78%;left:50%;">CB</div>
+          <div class="player" style="top:75%;left:80%;">RCB</div>
+
+          <!-- Wingbacks -->
+          <div class="player" style="top:60%;left:10%;">LWB</div>
+          <div class="player" style="top:60%;left:90%;">RWB</div>
+
+          <!-- Central Midfielders -->
+          <div class="player" style="top:60%;left:35%;">LCM</div>
+          <div id="rcm-move" class="player rcm" style="top:60%;left:65%;">RCM</div>
+          
+          <!-- CAM -->
+          <div class="player" style="top:40%;left:50%;background-color:#FFC107;">CAM</div>
+          
+          <!-- Strikers -->
+          <div class="player" style="top:25%;left:35%;">ST</div>
+          <div class="player" style="top:25%;left:65%;">ST</div>
+
+          <!-- RCM Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- Attacking Scenario Paths -->
+          <svg id="path-attacking-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-1" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FFC107" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 270,320 280,280 275,240" stroke="#ff5722" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-1)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-2" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF8C00" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 245,320 240,290 200,270" stroke="#FF8C00" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-2)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-3" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-3" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#32CD32" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 280,330 300,300 320,290" stroke="#32CD32" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-3)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+            </path>
+          </svg>
+
+          <!-- Defensive Scenario Paths -->
+          <svg id="path-defensive-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-4" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF3333" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 250,390 240,420 230,450" stroke="#FF3333" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-4)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-defensive-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-5" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#DC143C" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 280,390 300,410 310,430" stroke="#DC143C" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-5)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Transition Scenario Paths -->
+          <svg id="path-transition-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-6" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9932CC" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 240,330 220,310 210,280" stroke="#9932CC" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-6)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-transition-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-7" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#4B0082" />
+              </marker>
+            </defs>
+            <path d="M 260,360 C 290,340 320,330 340,310" stroke="#4B0082" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-7)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- No duplicate strikers here -->
+
+          <!-- Movement Labels - Shown/hidden by JavaScript -->
+          <div id="label-attacking-1" class="movement-label" style="display:none; top:40%;left:68%;">Box Run</div>
+          <div id="label-attacking-2" class="movement-label" style="display:none; top:45%;left:48%;">Support CAM</div>
+          <div id="label-attacking-3" class="movement-label" style="display:none; top:48%;left:75%;">Wide Support</div>
+          
+          <div id="label-defensive-1" class="movement-label" style="display:none; top:74%;left:58%;">Track Back</div>
+          <div id="label-defensive-2" class="movement-label" style="display:none; top:70%;left:75%;">Cover RWB</div>
+          
+          <div id="label-transition-1" class="movement-label" style="display:none; top:47%;left:56%;">Recovery Run</div>
+          <div id="label-transition-2" class="movement-label" style="display:none; top:52%;left:75%;">Counter Attack Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabbed Content Detail Section -->
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" onclick="activateTab('description')">Description</div>
+      <div class="tab" onclick="activateTab('instructions')">Player Instructions</div>
+      <div class="tab" onclick="activateTab('tips')">Coaching Tips</div>
+    </div>
+    
+    <div class="tab-content">
+      <div id="description" class="tab-pane active">
+        <h3 id="scenario-title">Select a Scenario Above</h3>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Right Central Midfielder (RCM) box-to-box position.</p>
+        
+        <div id="attacking-content" style="display:none;">
+          <h4>Box-to-Box RCM Attacking Contributions</h4>
+          <p>The box-to-box RCM balances attacking freedom with positional discipline, making calculated forward movements:</p>
+          <ol>
+            <li><strong>Late runs into the box:</strong> Times runs to arrive unmarked in the penalty area, offering a valuable goal threat from midfield</li>
+            <li><strong>Support between lines:</strong> Positions intelligently to receive passes between opposition defense and midfield lines</li>
+            <li><strong>Wide support:</strong> Provides width to create overloads with the RWB, stretching opposition defense</li>
+            <li><strong>Long-range shooting:</strong> Offers goal threat from distance when space opens up in front of the defense</li>
+          </ol>
+          <p>These calculated attacking movements add a crucial dimension to the team's attack while ensuring the midfield maintains its structure.</p>
+        </div>
+        
+        <div id="defensive-content" style="display:none;">
+          <h4>Box-to-Box RCM Defensive Responsibilities</h4>
+          <p>The defensive contributions of the box-to-box RCM are vital to maintaining team shape and security:</p>
+          <ol>
+            <li><strong>Tracking back:</strong> Shows high work rate to follow opposition midfield runners and support defenders when outnumbered</li>
+            <li><strong>Covering for RWB:</strong> Provides defensive security when the RWB advances, filling the space to prevent counter-attacks</li>
+            <li><strong>Screening passes:</strong> Positions intelligently to intercept passes and block dangerous passing lanes</li>
+            <li><strong>Pressing triggers:</strong> Initiates pressing actions when specific triggers occur, such as poor touches or back passes</li>
+            <li><strong>Defensive transitions:</strong> Reacts quickly when possession is lost to delay opposition attacks and allow defensive reorganization</li>
+          </ol>
+          <p>The box-to-box RCM's defensive awareness and work rate are essential to the team's defensive stability, particularly during moments of transition.</p>
+        </div>
+        
+        <div id="transition-content" style="display:none;">
+          <h4>Box-to-Box RCM in Transitions</h4>
+          <p>The box-to-box RCM is the engine during transition moments, connecting defense to attack and vice versa:</p>
+          <ol>
+            <li><strong>Defense to Attack:</strong> Provides a reliable passing option when winning possession, quickly turning defense into attack with progressive passes or carries</li>
+            <li><strong>Counter-Attack Support:</strong> Makes rapid forward runs to join counter-attacks, providing additional passing options or decoy movements</li>
+            <li><strong>Attack to Defense:</strong> Shows exceptional recovery speed and work rate to quickly regain defensive positions when possession is lost</li>
+            <li><strong>Counter-Pressing:</strong> Immediately applies pressure after losing possession to win the ball back or delay the opposition's transition</li>
+            <li><strong>Spatial Awareness:</strong> Recognizes and fills the most urgent spaces during transitions to maintain team shape</li>
+          </ol>
+          <p>The box-to-box RCM's ability to rapidly switch between defensive and attacking mindsets makes them the vital connector during transition moments.</p>
+        </div>
+      </div>
+      
+      <div id="instructions" class="tab-pane">
+        <h3>RCM (Box-to-Box) Player Instructions</h3>
+        
+        <h4>Attacking Phase</h4>
+        <ul>
+          <li>Make well-timed forward runs into the box to become an additional goal threat</li>
+          <li>Provide support to the CAM in advanced areas of the pitch</li>
+          <li>Offer passing options between the lines to progress attacks</li>
+          <li>Move into wide areas to create overloads with the RWB</li>
+          <li>Be ready to shoot from distance when the opportunity arises</li>
+          <li>Maintain positional discipline to ensure midfield balance</li>
+          <li>Arrive late into the box for cutbacks and second-ball opportunities</li>
+          <li>Support the strikers by making runs that create space for them</li>
+          <li>Rotate positions with other midfielders to create confusion for defenders</li>
+        </ul>
+        
+        <h4>Defensive Phase</h4>
+        <ul>
+          <li>Track back quickly when possession is lost to maintain defensive shape</li>
+          <li>Cover for RWB when they're caught out of position</li>
+          <li>Close down opposition midfielders to prevent them from playing forward passes</li>
+          <li>Make tactical fouls when necessary to stop dangerous counter-attacks</li>
+          <li>Provide defensive cover in the half-spaces between central and wide areas</li>
+          <li>Be ready to drop deeper to support the defensive line when under pressure</li>
+          <li>Win second balls in midfield to prevent opposition attacks</li>
+          <li>Apply pressure when specific pressing triggers occur (back passes, poor touches)</li>
+          <li>Cut passing lanes to opposition attackers with intelligent positioning</li>
+          <li>Communicate with defensive players to maintain compact shape</li>
+        </ul>
+        
+        <h4>Transition Phase</h4>
+        <ul>
+          <li>React quickly when possession changes hands in either direction</li>
+          <li>Serve as the connection point between defense and attack during transitions</li>
+          <li>When possession is won, provide immediate width or central support for counter-attacks</li>
+          <li>Make forward runs into space when the team breaks forward</li>
+          <li>When possession is lost, recover position quickly to delay opposition attacks</li>
+          <li>Execute immediate counter-pressing to regain possession in advanced areas</li>
+          <li>Communicate with teammates to coordinate pressing or counterattack movements</li>
+          <li>Offer a reliable passing outlet when playing out from defense</li>
+          <li>Recognize when to slow play down or when to accelerate the attack</li>
+          <li>Cover defensive spaces vacated by teammates during transitional moments</li>
+        </ul>
+      </div>
+      
+      <div id="tips" class="tab-pane">
+        <h3>Coaching Tips for the Box-to-Box RCM Position</h3>
+        
+        <h4>Player Selection</h4>
+        <p>The ideal box-to-box RCM in the 3-4-1-2 system should possess:</p>
+        <ul>
+          <li>Exceptional stamina and work rate to cover large areas of the pitch for 90+ minutes</li>
+          <li>Balanced technical skills (passing, shooting, dribbling) to contribute in all phases</li>
+          <li>Strong defensive awareness, tackling ability, and positional discipline</li>
+          <li>Tactical intelligence to recognize when to stay and when to advance</li>
+          <li>Good aerial ability to contest midfield duels and attack crosses</li>
+          <li>Precise shooting technique from medium and long range</li>
+          <li>Quick recovery speed for defensive transitions</li>
+          <li>Mental resilience and consistency to maintain performance levels</li>
+        </ul>
+        
+        <h4>Training Focus</h4>
+        <p>Develop these key aspects in training for the box-to-box RCM:</p>
+        <ul>
+          <li>High-intensity interval training to build the necessary stamina for continuous box-to-box movements</li>
+          <li>Timing of attacking runs into the box from deep positions</li>
+          <li>Finishing drills from various distances, focusing on arriving late in the penalty area</li>
+          <li>Defensive shadowing and positional play to cover spaces effectively</li>
+          <li>Quick transition drills that simulate rapid changes between defensive and attacking phases</li>
+          <li>Combination play with the CAM, RWB, and strikers in tight spaces</li>
+          <li>Medium and long-range shooting under pressure</li>
+          <li>Decision-making scenarios regarding when to stay positionally disciplined vs. when to join attacks</li>
+          <li>Recovery runs and defensive transition awareness when possession is lost</li>
+          <li>Small-sided games focusing on quick transitions between attacking and defending</li>
+        </ul>
+        
+        <h4>Tactical Adaptations</h4>
+        <ul>
+          <li>Against possession-based teams: Focus on cutting passing lanes, maintaining defensive shape, and pressing at the right moments</li>
+          <li>Against direct teams: Position to win second balls, control transitions, and protect the spaces behind the RWB</li>
+          <li>When leading: Be more conservative with forward runs, prioritize defensive stability, and maintain possession</li>
+          <li>When chasing a goal: Increase forward movement frequency, take more shooting opportunities, and make overlapping runs</li>
+          <li>Against teams with strong midfielders: Emphasize defensive positioning, tactical fouls when necessary, and disciplined pressing triggers</li>
+          <li>In counter-attacking strategy: Provide immediate outlet options after winning possession and make rapid supporting runs</li>
+          <li>Against attacking full-backs: Adjust positioning to provide additional defensive cover on the right side</li>
+          <li>In low-block defensive situations: Focus on screening passes into dangerous areas and being alert for quick transitions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Links -->
+<div class="nav-section">
+  <h3>Navigation</h3>
+  <div class="nav-buttons">
+    <a href="dashboard.html" class="nav-btn">Formation Overview</a>
+    <a href="lwb.html" class="nav-btn">LWB Position</a>
+    <a href="rwb.html" class="nav-btn">RWB Position</a>
+    <!-- Other position links will be added here as they are created -->
+  </div>
+</div>
+
+<script>
+  // Show specific scenario
+  function showScenario(scenario) {
+    // Reset all paths and labels
+    document.querySelectorAll('.movement-path').forEach(path => {
+      path.style.display = 'none';
+    });
+    document.querySelectorAll('.movement-label').forEach(label => {
+      label.style.display = 'none';
+    });
+    
+    // Remove active class from all scenarios
+    document.querySelectorAll('.scenario').forEach(s => {
+      s.classList.remove('active');
+    });
+    
+    // Add active class to selected scenario
+    document.querySelector(`.scenario[onclick="showScenario('${scenario}')"]`).classList.add('active');
+    
+    // Hide all content sections
+    document.getElementById('attacking-content').style.display = 'none';
+    document.getElementById('defensive-content').style.display = 'none';
+    document.getElementById('transition-content').style.display = 'none';
+    
+    // Show relevant paths based on scenario
+    if (scenario === 'attacking') {
+      document.getElementById('path-attacking-1').style.display = 'block';
+      document.getElementById('path-attacking-2').style.display = 'block';
+      document.getElementById('path-attacking-3').style.display = 'block';
+      document.getElementById('label-attacking-1').style.display = 'block';
+      document.getElementById('label-attacking-2').style.display = 'block';
+      document.getElementById('label-attacking-3').style.display = 'block';
+      document.getElementById('attacking-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Attacking Movements';
+      document.getElementById('scenario-description').textContent = 'The box-to-box RCM makes forward runs to support attacks and provide goal threats from midfield.';
+    } 
+    else if (scenario === 'defensive') {
+      document.getElementById('path-defensive-1').style.display = 'block';
+      document.getElementById('path-defensive-2').style.display = 'block';
+      document.getElementById('label-defensive-1').style.display = 'block';
+      document.getElementById('label-defensive-2').style.display = 'block';
+      document.getElementById('defensive-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Defensive Duties';
+      document.getElementById('scenario-description').textContent = 'The RCM tracks back to defend and provide cover for teammates when the team loses possession.';
+    }
+    else if (scenario === 'transition') {
+      document.getElementById('path-transition-1').style.display = 'block';
+      document.getElementById('path-transition-2').style.display = 'block';
+      document.getElementById('label-transition-1').style.display = 'block';
+      document.getElementById('label-transition-2').style.display = 'block';
+      document.getElementById('transition-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Transition Play';
+      document.getElementById('scenario-description').textContent = 'The box-to-box RCM is crucial during transitions, providing support in both attacking and defensive phases.';
+    }
+  }
+  
+  // Tab functionality
+  function activateTab(tabId) {
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Activate selected tab
+    document.querySelector(`.tab[onclick="activateTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+  
+  // Initialize with attacking scenario selected by default
+  window.onload = function() {
+    showScenario('attacking');
+  };
+</script>
+
+</body>
+</html>

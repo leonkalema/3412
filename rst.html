@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RST (Right Striker) Movements in 3-4-1-2 System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      padding: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #pitch-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    #pitch {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: auto;
+      background-color: #6da544;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+    .pitch-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .line {
+      position: absolute;
+      background-color: #fff;
+    }
+    .halfway {
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+    }
+    .circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .player {
+      position: absolute;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 11px;
+      line-height: 26px;
+      font-weight: bold;
+      transition: transform 0.3s;
+      z-index: 2;
+    }
+    .rst {
+      background-color: #3F51B5;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Path visualization */
+    .movement-path {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .movement-label {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    /* Animation controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .control-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .control-btn:hover {
+      background-color: #0056b3;
+    }
+    /* Interactive elements */
+    .scenario {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .scenario:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .scenario.active {
+      border-color: #0D6EFD;
+      box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+    }
+    .scenario.active:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #0D6EFD;
+    }
+    .scenario h4 {
+      margin-top: 0;
+      color: #0D6EFD;
+    }
+    .scenario-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    /* Movement visuals */
+    .movement-arrow {
+      position: absolute;
+      width: 0; 
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 40px solid;
+      opacity: 0.6;
+      transform-origin: bottom center;
+      z-index: 1;
+    }
+    /* Tabbed content */
+    .tab-container {
+      margin-top: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .tab {
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #0D6EFD;
+      color: white;
+    }
+    .tab-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      text-align: left;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Navigation section */
+    .nav-section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 15px;
+      background-color: #0D6EFD;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #0a58ca;
+    }
+    @media(max-width:800px){
+      #pitch-section {
+        flex-direction: column;
+      }
+    }
+    @media(max-width:450px){
+      #pitch{width:90%;height:auto;padding-bottom:150%;}
+      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
+      .movement-label{font-size:8px;}
+    }
+  </style>
+</head>
+<body>
+
+<h2>Right Striker (RST) Movements in 3-4-1-2 Formation</h2>
+<p>The Right Striker operates as a central striker between defenders, creating goal-scoring opportunities through intelligent positioning</p>
+
+<div id="main-container">
+  <!-- Interactive Scenarios -->
+  <div class="scenario-container">
+    <div class="scenario" onclick="showScenario('attacking')">
+      <h4>Central Positioning</h4>
+      <p>The RST plays through the middle, positioning between central defenders to create goal-scoring opportunities.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('linkup')">
+      <h4>Combination Play</h4>
+      <p>Linking with the LST and CAM to combine and create dangerous attacks in the final third.</p>
+    </div>
+    
+    <div class="scenario" onclick="showScenario('pressing')">
+      <h4>Pressing System</h4>
+      <p>Leading the press from the front and forcing opponents into mistakes to win the ball in dangerous areas.</p>
+    </div>
+  </div>
+  
+  <!-- Pitch Visualization -->
+  <div id="pitch-section">
+    <div style="max-width: 500px; margin: 0 auto;">
+      <div class="pitch-label">RST Movement Patterns</div>
+      <div id="pitch-movement">
+        <div id="pitch">
+          <!-- Pitch Lines -->
+          <div class="line halfway"></div>
+          <div class="circle"></div>
+
+          <!-- Goalkeeper -->
+          <div class="player" style="top:90%;left:50%;">GK</div>
+
+          <!-- Three CBs -->
+          <div class="player" style="top:75%;left:20%;">CB</div>
+          <div class="player" style="top:78%;left:50%;">CB</div>
+          <div class="player" style="top:75%;left:80%;">CB</div>
+
+          <!-- Wingbacks -->
+          <div class="player" style="top:60%;left:10%;">LWB</div>
+          <div class="player" style="top:60%;left:90%;">RWB</div>
+
+          <!-- Two Central Midfielders -->
+          <div class="player" style="top:60%;left:35%;">CM</div>
+          <div class="player" style="top:60%;left:65%;">CM</div>
+
+          <!-- CAM Position -->
+          <div class="player" style="top:45%;left:50%;background-color:#FFC107;color:#000;">CAM</div>
+          
+          <!-- Right Striker -->
+          <div id="rst-move" class="player rst" style="top:20%;left:50%;">RST</div>
+          
+          <!-- Left Striker -->
+          <div class="player" style="top:20%;left:35%;background-color:#E91E63;">LST</div>
+
+          <!-- RST Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- Attacking Movement Paths -->
+          <svg id="path-attacking-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-1" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3F51B5" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 200,80 200,60 200,50" stroke="#3F51B5" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-1)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-2" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3F51B5" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 180,110 160,100 140,95" stroke="#3F51B5" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-2)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-3" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-3" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3F51B5" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 220,110 240,100 260,95" stroke="#3F51B5" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-3)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+            </path>
+          </svg>
+
+          <!-- Link-Up Play Paths -->
+          <svg id="path-linkup-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-4" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9C27B0" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 180,140 160,170 150,180" stroke="#9C27B0" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-4)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-linkup-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-5" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#9C27B0" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 200,140 200,160 200,180" stroke="#9C27B0" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-5)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Pressing Paths -->
+          <svg id="path-pressing-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-6" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF5722" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 200,90 220,80 250,70" stroke="#FF5722" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-6)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-pressing-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-7" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#FF5722" />
+              </marker>
+            </defs>
+            <path d="M 200,120 C 200,90 180,80 150,70" stroke="#FF5722" stroke-width="3" fill="none" 
+                  stroke-dasharray="5,5" marker-end="url(#arrowhead-7)">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- No duplicate strikers here -->
+
+          <!-- Movement Labels - Shown/hidden by JavaScript -->
+          <div id="label-attacking-1" class="movement-label" style="display:none; top:12%;left:50%;">Central Run</div>
+          <div id="label-attacking-2" class="movement-label" style="display:none; top:22%;left:30%;">Split Defenders</div>
+          <div id="label-attacking-3" class="movement-label" style="display:none; top:22%;left:70%;">Channel Run</div>
+          
+          <div id="label-linkup-1" class="movement-label" style="display:none; top:30%;left:32%;">Connect with LST</div>
+          <div id="label-linkup-2" class="movement-label" style="display:none; top:32%;left:50%;">Drop to CAM</div>
+          
+          <div id="label-pressing-1" class="movement-label" style="display:none; top:12%;left:63%;">Press RCB</div>
+          <div id="label-pressing-2" class="movement-label" style="display:none; top:12%;left:37%;">Press LCB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabbed Content Detail Section -->
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" onclick="activateTab('description')">Description</div>
+      <div class="tab" onclick="activateTab('instructions')">Player Instructions</div>
+      <div class="tab" onclick="activateTab('tips')">Coaching Tips</div>
+    </div>
+    
+    <div class="tab-content">
+      <div id="description" class="tab-pane active">
+        <h3 id="scenario-title">Select a Scenario Above</h3>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Central Attacking Midfielder (CAM) position.</p>
+        
+        <div id="attacking-content" style="display:none;">
+          <h4>CAM Attacking Movement Patterns</h4>
+          <p>The CAM is the creative hub of the team in a 3-4-1-2 formation. When in possession, they operate primarily in these three ways:</p>
+          <ol>
+            <li><strong>Finding Space Between Lines (Yellow Path)</strong> - The CAM looks to position themselves between the opposition's defensive and midfield lines, creating passing options for teammates and threatening the defense.</li>
+            <li><strong>Supporting Wing Play (Orange Path)</strong> - When play develops on the left flank, the CAM shifts to provide an inside passing option for the LWB or to receive a cutback.</li>
+            <li><strong>Right Side Support (Green Path)</strong> - Similarly, when play develops on the right, the CAM drifts to support the RWB and create combinations.</li>
+          </ol>
+          <p>These movements are fluid and responsive to how the opposition defends and where space becomes available.</p>
+        </div>
+        
+        <div id="defensive-content" style="display:none;">
+          <h4>CAM Defensive Responsibilities</h4>
+          <p>While primarily an attacking player, the CAM has crucial defensive duties:</p>
+          <ol>
+            <li><strong>Blocking Passing Lanes (Red Path)</strong> - When the team loses possession, the CAM's first responsibility is often to drop back and block central passing lanes, preventing easy progression through the middle.</li>
+            <li><strong>Pressing Opposition Midfielders (Dark Red Path)</strong> - The CAM will apply pressure to opposition midfielders when they receive the ball in the CAM's zone, helping to win back possession.</li>
+          </ol>
+          <p>The CAM's defensive work is vital to the team's pressing strategy and preventing the opposition from building attacks through the center.</p>
+        </div>
+        
+        <div id="transition-content" style="display:none;">
+          <h4>CAM in Transition Phases</h4>
+          <p>Transitions between defense and attack are critical moments where the CAM plays a pivotal role:</p>
+          <ol>
+            <li><strong>Quick Counter-Attack Support (Purple Path)</strong> - When possession is won, the CAM quickly provides a central passing option before moving into advanced positions on the left.</li>
+            <li><strong>Right Side Counter-Attack (Dark Purple Path)</strong> - Alternatively, the CAM can support right-sided transitions, moving into space to receive the ball or create space for teammates.</li>
+          </ol>
+          <p>The speed and decision-making of the CAM during transitions can be the difference between a successful counter-attack and allowing the opposition to reorganize.</p>
+        </div>
+      </div>
+      
+      <div id="instructions" class="tab-pane">
+        <h3>CAM Player Instructions</h3>
+        
+        <h4>Attacking Phase</h4>
+        <ul>
+          <li>Position yourself between opposition lines to receive the ball and turn</li>
+          <li>Create triangles with nearby teammates (CMs, STs, and wingbacks)</li>
+          <li>Scan constantly for space and make yourself available for passes</li>
+          <li>Move into half-spaces when wingbacks have possession</li>
+          <li>Make late runs into the box when crosses come in from wide areas</li>
+          <li>Look to play quick one-twos with strikers to break defensive lines</li>
+        </ul>
+        
+        <h4>Defensive Phase</h4>
+        <ul>
+          <li>Close down opposition deep-lying playmakers when they receive the ball</li>
+          <li>Cut passing lanes to forward players</li>
+          <li>Drop into midfield line when team needs to establish defensive shape</li>
+          <li>Press with intensity in your zone but maintain team shape</li>
+          <li>Communicate with CMs about defensive responsibilities</li>
+        </ul>
+        
+        <h4>Transition Phase</h4>
+        <ul>
+          <li>Be ready to receive the first pass when possession is won</li>
+          <li>Quickly scan for forward passing options</li>
+          <li>Make yourself available in space when teammates win the ball</li>
+          <li>Lead counter-attacks through the middle or by supporting wide players</li>
+          <li>When possession is lost, immediately counter-press or recover position</li>
+        </ul>
+      </div>
+      
+      <div id="tips" class="tab-pane">
+        <h3>Coaching Tips for the CAM Position</h3>
+        
+        <h4>Player Selection</h4>
+        <p>The ideal CAM in this system should possess:</p>
+        <ul>
+          <li>Excellent vision and passing ability</li>
+          <li>Good decision-making under pressure</li>
+          <li>Technical skill to operate in tight spaces</li>
+          <li>Intelligence to find space between opposition lines</li>
+          <li>Work rate to contribute defensively</li>
+          <li>Ability to score from outside the box</li>
+        </ul>
+        
+        <h4>Training Focus</h4>
+        <p>Develop these key aspects in training:</p>
+        <ul>
+          <li>Rondo exercises to improve quick passing and movement</li>
+          <li>Small-sided games emphasizing finding space between lines</li>
+          <li>Transition drills focusing on quick counter-attacks</li>
+          <li>Finishing exercises from the edge of the box</li>
+          <li>Combination play with strikers and wingbacks</li>
+        </ul>
+        
+        <h4>Game Management</h4>
+        <p>Adjustments based on match situations:</p>
+        <ul>
+          <li>Against high-pressing teams: CAM may need to drop deeper to help midfield progression</li>
+          <li>When leading: CAM should focus more on defensive solidity and possession retention</li>
+          <li>When chasing a goal: CAM can take more risks and make more forward runs</li>
+          <li>Against teams sitting deep: CAM needs patience to find openings and may shoot more from distance</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Content Sections -->
+<div id="info-section" style="margin-top: 30px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+  <div id="info-text" style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+    <!-- Scenario information will appear here -->
+  </div>
+  
+  <div id="tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+    <div class="tab active" id="movement" onclick="activateTab('movement')" style="padding: 8px 15px; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer;">Movement Patterns</div>
+    <div class="tab" id="technical" onclick="activateTab('technical')" style="padding: 8px 15px; background-color: #e0e0e0; border-radius: 5px; cursor: pointer;">Technical Requirements</div>
+    <div class="tab" id="tactical" onclick="activateTab('tactical')" style="padding: 8px 15px; background-color: #e0e0e0; border-radius: 5px; cursor: pointer;">Tactical Instructions</div>
+    <div class="tab" id="coaching" onclick="activateTab('coaching')" style="padding: 8px 15px; background-color: #e0e0e0; border-radius: 5px; cursor: pointer;">Coaching Tips</div>
+  </div>
+  
+  <div id="tab-contents">
+    <div id="movement-content" class="tab-content" style="display: block; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+      <h3>RST Movement Patterns in 3-4-1-2 Formation</h3>
+      <p>The Right Striker (RST) in our 3-4-1-2 system operates primarily as a central striker positioned between the opposition center-backs. Unlike traditional systems with wide forwards, the RST needs to be comfortable operating in congested central areas.</p>
+      
+      <h4>Key Movement Principles:</h4>
+      <ul>
+        <li><strong>Central Channel Focus:</strong> Unlike the LST who may drift wider, the RST maintains central positioning to occupy the defenders and create space between them.</li>
+        <li><strong>Vertical Stretching:</strong> Makes frequent runs in behind the defense to stretch them vertically, creating space for the CAM and LST.</li>
+        <li><strong>Split the Center-Backs:</strong> Constantly looks to position in the gaps between defenders, creating indecision about who should mark them.</li>
+        <li><strong>Support Play:</strong> Drops into pockets of space to link with the CAM when needed, before spinning to attack space in behind.</li>
+      </ul>
+    </div>
+    
+    <div id="technical-content" class="tab-content" style="display: none; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+      <h3>Technical Requirements for RST</h3>
+      <p>The RST position demands a specific set of technical skills to be effective in the central striking role:</p>
+      
+      <h4>Essential Technical Abilities:</h4>
+      <ul>
+        <li><strong>Finishing:</strong> Must be clinical in front of goal with both feet and head. Ability to score from various angles and distances is paramount.</li>
+        <li><strong>First Touch:</strong> Excellent first touch under pressure to control balls played into feet with defenders in close proximity.</li>
+        <li><strong>Heading:</strong> Strong aerial ability both for scoring and holding up play when receiving direct balls.</li>
+        <li><strong>Link-up Play:</strong> Short passing ability to combine with the CAM and LST in tight spaces.</li>
+        <li><strong>Shielding:</strong> Body strength to hold off defenders and protect the ball with back to goal.</li>
+        <li><strong>Turning:</strong> Quick and efficient turning ability to spin defenders after receiving with back to goal.</li>
+      </ul>
+    </div>
+    
+    <div id="tactical-content" class="tab-content" style="display: none; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+      <h3>Tactical Instructions for RST</h3>
+      <p>The RST must understand their role within the team's overall tactical approach:</p>
+      
+      <h4>Attacking Phase:</h4>
+      <ul>
+        <li>Primarily position between the opposition center-backs, seeking to create and exploit separation between them.</li>
+        <li>When the ball is on the left side, make diagonal runs toward the right center-back's blind side.</li>
+        <li>Act as a wall pass option for the CAM when they advance with the ball.</li>
+        <li>Time runs to stay onside while maximizing threat in behind the defensive line.</li>
+      </ul>
+      
+      <h4>Defensive Phase:</h4>
+      <ul>
+        <li>Lead the first line of defense by pressing the right-sided center-back and goalkeeper.</li>
+        <li>Work in coordination with the LST to force play toward one side based on tactical triggers.</li>
+        <li>Cut passing lanes to the opposition's defensive midfielder when appropriate.</li>
+        <li>Conserve energy by pressing intelligently rather than chasing lost causes.</li>
+      </ul>
+      
+      <h4>Transition Moments:</h4>
+      <ul>
+        <li>Offer a direct outlet for counter-attacks, running the central channel at pace.</li>
+        <li>When possession is lost, immediately press the nearest defender to delay their build-up.</li>
+        <li>If the team wins the ball in its own half, make forward runs to stretch the opposition defense.</li>
+      </ul>
+    </div>
+    
+    <div id="coaching-content" class="tab-content" style="display: none; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">
+      <h3>Coaching Tips for RST Development</h3>
+      <p>When coaching players for the RST role, focus on these key areas:</p>
+      
+      <h4>Training Focus:</h4>
+      <ul>
+        <li><strong>Finishing Drills:</strong> Prioritize varied finishing exercises from different angles and distances, including one-touch finishes, volleys, and headers.</li>
+        <li><strong>Timing Runs:</strong> Practice runs behind the defense with offside awareness. Use mannequins to represent defenders and work on identifying the correct moments to make forward runs.</li>
+        <li><strong>Hold-up Play:</strong> Develop the ability to receive with back to goal under pressure, hold off defenders, and link with supporting teammates.</li>
+        <li><strong>Coordination:</strong> Regular combined exercises with the CAM and LST to develop understanding and effective combination patterns.</li>
+      </ul>
+      
+      <h4>Player Profile:</h4>
+      <p>The ideal RST in this system combines:</p>
+      <ul>
+        <li>Clinical finishing ability</li>
+        <li>Intelligent movement between defenders</li>
+        <li>Physical presence to occupy center-backs</li>
+        <li>Technical quality to link with teammates</li>
+        <li>Mental awareness to lead the pressing game</li>
+      </ul>
+      
+      <h4>Key Performance Indicators:</h4>
+      <ul>
+        <li>Goals scored and conversion rate</li>
+        <li>Successful link-up play completions</li>
+        <li>Pressing effectiveness (balls won in opposition half)</li>
+        <li>Aerial duels won</li>
+        <li>Shots on target per match</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Links -->
+<div class="nav-section">
+  <h3>Navigation</h3>
+  <div class="nav-buttons">
+    <a href="dashboard.html" class="nav-btn">Formation Overview</a>
+    <a href="lwb.html" class="nav-btn">LWB Position</a>
+    <a href="rwb.html" class="nav-btn">RWB Position</a>
+    <a href="lcm.html" class="nav-btn">LCM Position</a>
+    <a href="rcm.html" class="nav-btn">RCM Position</a>
+    <a href="cam.html" class="nav-btn">CAM Position</a>
+    <a href="lst.html" class="nav-btn">LST Position</a>
+    <!-- Currently on RST page -->
+  </div>
+</div>
+
+<script>
+  function showScenario(scenario) {
+    // Reset all paths and labels
+    document.querySelectorAll('.movement-path').forEach(path => {
+      path.style.display = 'none';
+    });
+    document.querySelectorAll('.movement-label').forEach(label => {
+      label.style.display = 'none';
+    });
+    
+    // Show the selected scenario's paths and labels
+    document.querySelectorAll(`#path-${scenario}-1, #path-${scenario}-2, #path-${scenario}-3`).forEach(path => {
+      if (path) {
+        path.style.display = 'block';
+      }
+    });
+    document.querySelectorAll(`#label-${scenario}-1, #label-${scenario}-2, #label-${scenario}-3`).forEach(label => {
+      if (label) {
+        label.style.display = 'block';
+      }
+    });
+    
+    // Update active scenario
+    document.querySelectorAll('.scenario').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.scenario[onclick="showScenario('${scenario}')"]`).classList.add('active');
+    
+    // Update info text based on scenario
+    let infoText = '';
+    if (scenario === 'attacking') {
+      infoText = '<h3>Central Positioning</h3><p>As the central striker (RST), positioning between defenders is crucial to creating goal-scoring opportunities:</p><ul><li>Making direct vertical runs to stretch the defense</li><li>Positioning between center backs to create separation</li><li>Targeting the space behind the defensive line</li><li>Creating space for supporting attackers to exploit</li></ul>';
+    } else if (scenario === 'linkup') {
+      infoText = '<h3>Combination Play</h3><p>The RST must effectively combine with teammates to create and finish attacking moves:</p><ul><li>Dropping into space to link with CAM</li><li>Creating passing triangles with the LST and midfielders</li><li>Providing a wall pass option for advancing midfielders</li><li>Setting up shooting opportunities for teammates</li></ul>';
+    } else if (scenario === 'pressing') {
+      infoText = '<h3>Pressing System</h3><p>The RST has important defensive responsibilities in the pressing phase:</p><ul><li>Pressing opposition center-backs based on pressing triggers</li><li>Cutting passing lanes to force play into traps</li><li>Working with LST to coordinate pressing movements</li><li>Communicating with teammates to maintain the pressing structure</li></ul>';
+    }
+    document.getElementById('info-text').innerHTML = infoText;
+  }
+  
+  // Tab functionality
+  function activateTab(tabId) {
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.style.display = 'none';
+    });
+    
+    // Activate the selected tab
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById(tabId + '-content').style.display = 'block';
+  }
+  
+  // Initialize with attacking scenario and first tab
+  window.onload = function() {
+    showScenario('attacking');
+    activateTab('movement');
+  };
+</script>
+
+</body>
+</html>

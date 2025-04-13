@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LCB Movements in 3-4-1-2 System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      padding: 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #pitch-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    #pitch {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: auto;
+      background-color: #6da544;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+    .pitch-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .line {
+      position: absolute;
+      background-color: #fff;
+    }
+    .halfway {
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+    }
+    .circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .player {
+      position: absolute;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 11px;
+      line-height: 26px;
+      font-weight: bold;
+      transition: transform 0.3s;
+      z-index: 2;
+    }
+    .lcb {
+      background-color: #3f51b5;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Path visualization */
+    .movement-path {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .movement-label {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    /* Animation controls */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .control-btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .control-btn:hover {
+      background-color: #0056b3;
+    }
+    /* Interactive elements */
+    .scenario {
+      display: inline-block;
+      width: 200px;
+      margin: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .scenario:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .scenario.active {
+      border-color: #0D6EFD;
+      box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+    }
+    .scenario.active:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #0D6EFD;
+    }
+    .scenario h4 {
+      margin-top: 0;
+      color: #0D6EFD;
+    }
+    .scenario-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    /* Movement visuals */
+    .movement-arrow {
+      position: absolute;
+      width: 0; 
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 40px solid;
+      opacity: 0.6;
+      transform-origin: bottom center;
+      z-index: 1;
+    }
+    /* Tabbed content */
+    .tab-container {
+      margin-top: 20px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .tab {
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background-color: #0D6EFD;
+      color: white;
+    }
+    .tab-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 0 5px 5px 5px;
+      text-align: left;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    /* Navigation section */
+    .nav-section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 8px 15px;
+      background-color: #0D6EFD;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .nav-btn:hover {
+      background-color: #0a58ca;
+    }
+    @media(max-width:800px){
+      #pitch-section {
+        flex-direction: column;
+      }
+    }
+    @media(max-width:450px){
+      #pitch{width:90%;height:auto;padding-bottom:150%;}
+      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
+      .movement-label{font-size:8px;}
+    }
+  </style>
+</head>
+<body>
+
+<h2>LCB Movements in 3-4-1-2 Formation</h2>
+<p>See how the Left Center Back (LCB) moves during the game</p>
+
+<div id="main-container">
+  <!-- Interactive Scenarios -->
+  <div class="scenario-container">
+    <div class="scenario" onclick="showScenario('attacking')">
+      <h4>Attacking Movements</h4>
+      <p>How the LCB helps with passing and attack.</p>
+    </div>
+    <div class="scenario" onclick="showScenario('transition')">
+      <h4>Transition Play</h4>
+      <p>How the LCB moves when the ball changes teams.</p>
+    </div>
+    <div class="scenario" onclick="showScenario('defensive')">
+      <h4>Defensive Duties</h4>
+      <p>How the LCB defends and marks opposing players.</p>
+    </div>
+  </div>
+  
+  <!-- Pitch Visualization -->
+  <div id="pitch-section">
+    <div style="max-width: 500px; margin: 0 auto;">
+      <div class="pitch-label">LCB Movement Patterns</div>
+      <div id="pitch-movement">
+        <div id="pitch">
+          <!-- Pitch Lines -->
+          <div class="line halfway"></div>
+          <div class="circle"></div>
+
+          <!-- Goalkeeper -->
+          <div class="player" style="top:90%;left:50%;">GK</div>
+
+          <!-- Three CBs -->
+          <div class="player lcb" style="top:75%;left:35%;">LCB</div>
+          <div class="player" style="top:75%;left:50%;">CB</div>
+          <div class="player" style="top:75%;left:65%;">RCB</div>
+
+          <!-- Wingbacks -->
+          <div class="player" style="top:60%;left:15%;">LWB</div>
+          <div class="player" style="top:60%;left:85%;">RWB</div>
+
+          <!-- Two Central Midfielders -->
+          <div class="player" style="top:60%;left:35%;">CM</div>
+          <div class="player" style="top:60%;left:65%;">CM</div>
+
+          <!-- Central Attacking Midfielder -->
+          <div class="player" style="top:45%;left:50%;">CAM</div>
+
+          <!-- LCB Movement Paths - initially hidden, shown by JavaScript -->
+          <!-- Attacking Scenario Paths -->
+          <svg id="path-attacking-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-attacking" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3f51b5" />
+              </marker>
+            </defs>
+            <path d="M140,450 C135,430 130,410 140,390" stroke="#3f51b5" stroke-width="3" fill="none" marker-end="url(#arrowhead-attacking)" stroke-dasharray="10,5" stroke-linecap="round">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <svg id="path-attacking-2" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-attacking" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3f51b5" />
+              </marker>
+            </defs>
+            <path d="M140,450 C150,430 160,420 170,410" stroke="#3f51b5" stroke-width="3" fill="none" marker-end="url(#arrowhead-attacking)" stroke-dasharray="0" stroke-linecap="round">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Defensive Scenario Paths -->
+          <svg id="path-defensive-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-defensive" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#1e88e5" />
+              </marker>
+            </defs>
+            <path d="M170,330 C160,380 150,420 140,450" stroke="#1e88e5" stroke-width="3" fill="none" marker-end="url(#arrowhead-defensive)" stroke-dasharray="0" stroke-linecap="round">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            </path>
+          </svg>
+
+          <!-- Transition Scenario Paths -->
+          <svg id="path-transition-1" class="movement-path" width="400" height="600" style="display:none; position:absolute; top:0; left:0;">
+            <defs>
+              <marker id="arrowhead-transition" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#7cb342" />
+              </marker>
+            </defs>
+            <path d="M140,450 C130,420 125,390 140,360" stroke="#7cb342" stroke-width="3" fill="none" marker-end="url(#arrowhead-transition)" stroke-dasharray="5,5" stroke-linecap="round">
+              <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
+            </path>
+          </svg>
+
+          <!-- Two Strikers -->
+          <div class="player" style="top:30%;left:35%;">ST</div>
+          <div class="player" style="top:30%;left:65%;">ST</div>
+
+          <!-- Movement Labels - Shown/hidden by JavaScript -->
+          <div id="label-attacking-1" class="movement-label" style="display:none; top:65%; left:30%;">Step slightly forward</div>
+          <div id="label-attacking-2" class="movement-label" style="display:none; top:70%;left:45%;">Stay in line with CBs</div>
+          <div id="label-attacking-3" class="movement-label" style="display:none; top:60%; left:40%;">Provide passing options</div>
+          
+          <div id="label-defensive-1" class="movement-label" style="display:none; top:35%; left:40%;">Get back in position</div>
+          <div id="label-defensive-2" class="movement-label" style="display:none; top:65%; left:25%;">Help LWB</div>
+          
+          <div id="label-transition-1" class="movement-label" style="display:none; top:50%;left:25%;">Cover space</div>
+          <div id="label-transition-2" class="movement-label" style="display:none; top:60%; left:40%;">Get back in position</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabbed Content Detail Section -->
+  <div class="tab-container">
+    <div class="tabs">
+      <div class="tab active" onclick="activateTab('description')">Description</div>
+      <div class="tab" onclick="activateTab('instructions')">Player Instructions</div>
+      <div class="tab" onclick="activateTab('tips')">Coaching Tips</div>
+    </div>
+    
+    <div class="tab-content">
+      <div id="description" class="tab-pane active">
+        <h3 id="scenario-title">Select a Scenario Above</h3>
+        <p id="scenario-description">Click on one of the scenarios above to see detailed movement patterns for the Left Center Back (LCB) position.</p>
+        
+        <div id="attacking-content" style="display:none;">
+          <h4>LCB in Attack</h4>
+          <p>The Left Center Back helps the team when attacking. Here's what to do:</p>
+          <ol>
+            <li><strong>Stay in Line (Blue Path)</strong> - Keep in line with your other center backs. Don't break the defensive line!</li>
+            <li><strong>Step Forward Slightly (Blue Path)</strong> - Only step forward a little bit when your team has the ball.</li>
+            <li><strong>Provide Passing Options (Green Path)</strong> - Be ready to receive and move the ball.</li>
+            <li><strong>Play Diagonal Passes</strong> - Look for chances to make diagonal passes to players on the other side of the field.</li>
+            <li><strong>Make Breaking Passes</strong> - Try to pass the ball between or behind opposing players to your teammates.</li>
+          </ol>
+          <p>Remember: NEVER move too far forward. Stay in line with your other defenders!</p>
+        </div>
+        
+        <div id="defensive-content" style="display:none;">
+          <h4>LCB in Defense</h4>
+          <p>As a Left Center Back, your main job is defending. Here's what to do:</p>
+          <ol>
+            <li><strong>Get Back in Position (Blue Path)</strong> - When your team loses the ball, get back into your defensive position quickly.</li>
+            <li><strong>Help LWB (Light Blue Path)</strong> - Cover the space when your Left Wing Back moves forward.</li>
+            <li><strong>Cover for CB</strong> - If the central CB moves to the right, slide over to cover the central area.</li>
+            <li><strong>Call for Cover</strong> - When you move to help others, call for teammates to cover the space behind you.</li>
+          </ol>
+          <p>Important: Stay close to the other defenders to form a strong defensive line.</p>
+        </div>
+        
+        <div id="transition-content" style="display:none;">
+          <h4>LCB During Transitions</h4>
+          <p>Soccer switches quickly between attack and defense. Here's what to do during these changes:</p>
+          <ol>
+            <li><strong>Cover Space (Green Path)</strong> - When your team wins the ball, be ready to cover spaces and provide passing options.</li>
+            <li><strong>Get Back (Dark Green Path)</strong> - When your team loses the ball, quickly get back into your defensive position.</li>
+          </ol>
+          <p>Remember: Always keep looking around so you know where you need to be!</p>
+        </div>
+      </div>
+      
+      <div id="instructions" class="tab-pane">
+        <h3>LCB Simple Instructions</h3>
+        
+        <h4>When Your Team Has the Ball</h4>
+        <ul>
+          <li>Stay in line with your other center backs</li>
+          <li>Only step forward slightly if needed</li>
+          <li>Pass the ball forward when possible</li>
+          <li>Look for diagonal passes across the field</li>
+          <li>Try to pass the ball between or behind opponents (breaking passes)</li>
+          <li>Stay connected with your teammates</li>
+          <li>Be ready to receive passes from the right side</li>
+        </ul>
+        
+        <h4>When the Other Team Has the Ball</h4>
+        <ul>
+          <li>Get back into your defensive position quickly</li>
+          <li>Stay close to the other defenders</li>
+          <li>Mark opposing forwards when they come to your area</li>
+          <li>Cover for the CB if the CB moves to the right</li>
+          <li>Call for cover when you move to help others</li>
+          <li>Help cover your teammates if they get out of position</li>
+          <li>Talk to your fellow defenders</li>
+        </ul>
+        
+        <h4>When the Ball Changes Teams</h4>
+        <ul>
+          <li>React quickly when possession changes</li>
+          <li>When your team wins the ball, provide a passing option</li>
+          <li>When your team loses the ball, get back in position fast</li>
+          <li>Keep your head up and watch what's happening</li>
+          <li>Help your teammates</li>
+        </ul>
+      </div>
+      
+      <div id="tips" class="tab-pane">
+        <h3>Simple Tips for Playing LCB</h3>
+        
+        <h4>What Makes a Good LCB</h4>
+        <ul>
+          <li>Good at defending one-on-one</li>
+          <li>Can pass the ball well</li>
+          <li>Communicates with teammates</li>
+          <li>Has good positioning</li>
+          <li>Stays focused throughout the game</li>
+        </ul>
+        
+        <h4>Things to Practice</h4>
+        <ul>
+          <li>Passing the ball forward</li>
+          <li>Diagonal passes to teammates</li>
+          <li>Breaking passes between opponents</li>
+          <li>Heading the ball</li>
+          <li>Tackling safely</li>
+          <li>Marking attackers</li>
+          <li>Positioning with other defenders</li>
+        </ul>
+        
+        <h4>Adjusting During Games</h4>
+        <ul>
+          <li>Stay back more when playing against strong teams</li>
+          <li>Focus on defense when your team is winning</li>
+          <li>Help with attacks when your team needs a goal</li>
+          <li>Watch out for fast attackers on your side</li>
+          <li>Keep talking to your teammates</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Links -->
+<div class="nav-section">
+  <h3>Navigation</h3>
+  <div class="nav-buttons">
+    <a href="dashboard.html" class="nav-btn">Formation Overview</a>
+    <a href="rwb.html" class="nav-btn">RWB Position</a>
+    <a href="cam.html" class="nav-btn">CAM Position</a>
+    <!-- Other position links will be added here as they are created -->
+  </div>
+</div>
+
+<script>
+  // Show specific scenario
+  function showScenario(scenario) {
+    // Reset all paths and labels
+    document.querySelectorAll('.movement-path').forEach(path => {
+      path.style.display = 'none';
+    });
+    document.querySelectorAll('.movement-label').forEach(label => {
+      label.style.display = 'none';
+    });
+    
+    // Remove active class from all scenarios
+    document.querySelectorAll('.scenario').forEach(s => {
+      s.classList.remove('active');
+    });
+    
+    // Add active class to selected scenario
+    document.querySelector(`.scenario[onclick="showScenario('${scenario}')"]`).classList.add('active');
+    
+    // Hide all content sections
+    document.getElementById('attacking-content').style.display = 'none';
+    document.getElementById('defensive-content').style.display = 'none';
+    document.getElementById('transition-content').style.display = 'none';
+    
+    // Show relevant paths based on scenario
+    if (scenario === 'attacking') {
+      document.getElementById('path-attacking-1').style.display = 'block';
+      document.getElementById('path-attacking-2').style.display = 'block';
+      document.getElementById('label-attacking-1').style.display = 'block';
+      document.getElementById('label-attacking-2').style.display = 'block';
+      document.getElementById('label-attacking-3').style.display = 'block';
+      document.getElementById('attacking-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Attacking Movements';
+      document.getElementById('scenario-description').textContent = 'The LCB stays in line with the defensive line while helping with passing.';
+    } 
+    else if (scenario === 'defensive') {
+      document.getElementById('path-defensive-1').style.display = 'block';
+      document.getElementById('label-defensive-1').style.display = 'block';
+      document.getElementById('label-defensive-2').style.display = 'block';
+      document.getElementById('defensive-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Defensive Duties';
+      document.getElementById('scenario-description').textContent = 'The LCB helps defend by marking attackers and covering spaces.';
+    }
+    else if (scenario === 'transition') {
+      document.getElementById('path-transition-1').style.display = 'block';
+      document.getElementById('label-transition-1').style.display = 'block';
+      document.getElementById('label-transition-2').style.display = 'block';
+      document.getElementById('transition-content').style.display = 'block';
+      document.getElementById('scenario-title').textContent = 'Transition Play';
+      document.getElementById('scenario-description').textContent = 'The LCB needs to be ready to switch between attack and defense quickly.';
+    }
+  }
+  
+  // Tab functionality
+  function activateTab(tabId) {
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Activate selected tab
+    document.querySelector(`.tab[onclick="activateTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+  
+  // Initialize with attacking scenario selected by default
+  window.onload = function() {
+    showScenario('attacking');
+  };
+</script>
+
+</body>
+</html>
