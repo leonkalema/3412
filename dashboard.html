@@ -4,198 +4,526 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sundbyberg FC - 3-4-1-2 Formation Guide</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f0f0f0;
-      padding: 10px;
-      max-width: 1000px;
-      margin: 0 auto;
-      color: #333;
+    :root {
+      /* Swedish flag colors */
+      --primary: #006AA7; /* Swedish blue */
+      --primary-light: #e3f2fd;
+      --secondary: #FECC02; /* Swedish yellow */
+      --secondary-light: #fff8e1;
+      --dark: #202124;
+      --light: #ffffff;
+      --gray-100: #f8f9fa;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --gray-400: #ced4da;
+      --gray-500: #adb5bd;
+      --gray-600: #6c757d;
+      --gray-700: #495057;
+      --gray-800: #343a40;
+      --pitch-green: #4CAF50;
+      --pitch-lines: rgba(255,255,255,0.8);
+      --accent: #FECC02; /* Swedish yellow */
+      --danger: #ea4335;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+      --shadow-md: 0 2px 4px rgba(0,0,0,0.05);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,0.05);
+      --transition: all 0.2s ease-in-out;
     }
-    .header {
-      margin-bottom: 20px;
-      padding: 20px;
-      background-color: #0D6EFD;
-      color: white;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .header h1 {
+    
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-size: 28px;
+      padding: 0;
     }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: var(--gray-100);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .section-header .section-title {
+      margin-bottom: 0;
+      margin-right: 10px;
+      padding-bottom: 0;
+      border-bottom: none;
+      white-space: nowrap;
+    }
+    
+
+    
+    .info-card {
+      padding: 15px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    /* Header styles */
+    .header {
+      background: var(--primary);
+      color: var(--light);
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid var(--secondary);
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvc3ZnPg==');
+      background-size: 150px;
+      opacity: 0.5;
+      z-index: 0;
+    }
+    
+    .header .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    
     .header p {
-      margin: 5px 0 0;
-      font-size: 16px;
+      font-size: 1.125rem;
+      font-weight: 400;
+      max-width: 700px;
+      margin: 0 auto;
       opacity: 0.9;
     }
+    
     .coach {
-      font-style: italic;
-      margin-top: 10px;
-    }
-    #pitch-container {
-      position: relative;
-      max-width: 500px;
-      margin: 0 auto 30px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    #pitch {
-      position: relative;
-      width: 400px;
-      height: 600px;
-      margin: auto;
-      background-color: #6da544;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
-    .line {
-      position: absolute;
-      background-color: #fff;
-    }
-    .halfway {
-      top: 50%; left: 0;
-      width: 100%; height: 2px;
-    }
-    .circle {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 80px; height: 80px;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .player {
-      position: absolute;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background-color: #007bff;
-      color: #fff;
-      font-size: 11px;
-      line-height: 26px;
-      font-weight: bold;
-      z-index: 2;
-      transition: all 0.2s;
-    }
-    .position-link {
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .position-link:hover .player {
-      box-shadow: 0 0 12px rgba(255,193,7,0.8);
-      transform: scale(1.15);
-      z-index: 10;
-    }
-    .position-note {
-      font-size: 12px;
-      color: #555;
-      margin-top: 10px;
-    }
-    
-    /* Formation explanation section */
-    .formation-details {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin: 40px 0;
-      text-align: left;
-      gap: 20px;
-    }
-    .formation-details > div {
-      flex: 1;
-      min-width: 300px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .formation-details h3 {
-      color: #0D6EFD;
-      margin-top: 0;
-      border-bottom: 2px solid #f0f0f0;
-      padding-bottom: 10px;
-    }
-    .formation-details ul {
-      padding-left: 20px;
-    }
-    .formation-details li {
-      margin-bottom: 10px;
-    }
-    
-    /* Position details section */
-    .position-details {
-      margin-top: 40px;
-      padding: 20px;
-      background-color: white;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .position-details h2 {
-      color: #0D6EFD;
-      margin-top: 0;
-    }
-    .position-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .position-btn {
       display: inline-block;
-      padding: 12px 20px;
-      background-color: #0D6EFD;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: bold;
-      transition: all 0.2s;
-      min-width: 120px;
-    }
-    .position-btn:hover {
-      background-color: #0a58ca;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .position-description {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #555;
-    }
-    
-    /* Footer */
-    .footer {
-      margin-top: 50px;
-      padding: 20px;
-      background-color: #333;
-      color: white;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    .footer p {
-      margin: 5px 0;
+      background: rgba(255,255,255,0.15);
+      padding: 0.25rem 1rem;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      margin-top: 1rem;
     }
     
     /* Security notice */
     .security-notice {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #ffeeee;
-      border: 1px solid #ffcccc;
-      border-radius: 5px;
-      color: #cc0000;
-      font-size: 14px;
+      background-color: rgba(251, 188, 4, 0.1);
+      border-left: 4px solid var(--accent);
+      color: var(--gray-800);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 2.5rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
     
-    @media(max-width:450px){
-      #pitch{width:90%;height:auto;padding-bottom:150%;}
-      .player{width:8%;height:0;padding-bottom:8%;font-size:9px;line-height:normal;padding-top:3px;}
-      .formation-details > div {
-        min-width: 100%;
+    .security-notice strong {
+      color: var(--dark);
+      margin-right: 0.5rem;
+    }
+    
+    /* Pitch container styles */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      text-align: left;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 2px solid var(--secondary);
+    }
+    
+    .card {
+      background-color: var(--light);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      height: 100%;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    #pitch-container {
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    
+    #pitch {
+      position: relative;
+      width: 100%;
+      padding-bottom: 66%; /* 3:2 aspect ratio pitch */
+      margin: auto;
+      background: var(--pitch-green);
+      background: linear-gradient(to bottom, #4baf50 0%, #3d9142 50%, #4baf50 100%);
+      background-size: 100% 100%;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 4px solid white;
+    }
+    
+    /* Field markings */
+    .field-markings {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .halfway-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: rgba(255,255,255,0.9);
+      transform: translateY(-50%);
+    }
+    
+    .center-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20%;
+      height: 0;
+      padding-bottom: 20%;
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .penalty-area {
+      position: absolute;
+      left: 50%;
+      width: 44%;
+      height: 20%;
+      border: 2px solid rgba(255,255,255,0.9);
+      transform: translateX(-50%);
+    }
+    
+    .penalty-area.top {
+      top: 0;
+      border-bottom: 2px solid rgba(255,255,255,0.9);
+      border-top: none;
+    }
+    
+    .penalty-area.bottom {
+      bottom: 0;
+      border-top: 2px solid rgba(255,255,255,0.9);
+      border-bottom: none;
+    }
+    
+    .goal-area {
+      position: absolute;
+      left: 50%;
+      width: 22%;
+      height: 10%;
+      border: 2px solid rgba(255,255,255,0.9);
+      transform: translateX(-50%);
+    }
+    
+    .goal-area.top {
+      top: 0;
+      border-bottom: 2px solid rgba(255,255,255,0.9);
+      border-top: none;
+    }
+    
+    .goal-area.bottom {
+      bottom: 0;
+      border-top: 2px solid rgba(255,255,255,0.9);
+      border-bottom: none;
+    }
+    
+    .penalty-spot {
+      position: absolute;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      background-color: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .penalty-spot.top {
+      top: 15%;
+    }
+    
+    .penalty-spot.bottom {
+      bottom: 15%;
+    }
+    
+    .corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.9);
+    }
+    
+    .corner.top-left {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+      border-top-left-radius: 20px;
+    }
+    
+    .corner.top-right {
+      top: 0;
+      right: 0;
+      border-left: none;
+      border-bottom: none;
+      border-top-right-radius: 20px;
+    }
+    
+    .corner.bottom-left {
+      bottom: 0;
+      left: 0;
+      border-right: none;
+      border-top: none;
+      border-bottom-left-radius: 20px;
+    }
+    
+    .corner.bottom-right {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+      border-bottom-right-radius: 20px;
+    }
+    
+    .player {
+      position: absolute;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: var(--light);
+      font-size: 14px;
+      line-height: 40px;
+      font-weight: 600;
+      text-align: center;
+      z-index: 5;
+      transition: var(--transition);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      border: 2px solid white;
+    }
+    
+    .position-link {
+      cursor: pointer;
+      text-decoration: none;
+    }
+    
+    .position-link:hover .player {
+      background-color: var(--accent);
+      color: var(--dark);
+      transform: scale(1.15);
+      box-shadow: 0 0 0 4px rgba(251, 188, 4, 0.3);
+      z-index: 10;
+    }
+    
+    .position-note {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin-top: 1rem;
+      font-style: italic;
+    }
+    
+    /* Formation details section */
+    .formation-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 1rem 0;
+    }
+    
+    .formation-details > div {
+      background-color: var(--light);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    
+    .formation-details h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      padding: 0.75rem 1rem;
+      margin: 0;
+      border-bottom: 2px solid var(--secondary-light);
+      background-color: var(--primary-light);
+    }
+    
+    .formation-details ul {
+      padding: 0.75rem 1rem 0.75rem 2rem;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    .formation-details li {
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    
+    .formation-details li:last-child {
+      margin-bottom: 0;
+    }
+    
+    .formation-details li strong {
+      color: var(--dark);
+      font-weight: 600;
+    }
+    
+    /* Position details section */
+    .position-details {
+      text-align: center;
+      padding: 3rem 0;
+      background-color: var(--primary-light);
+      border-radius: var(--radius-lg);
+      margin: 3rem 0;
+    }
+    
+    .position-details h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    
+    .position-details p {
+      font-size: 1rem;
+      color: var(--gray-700);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+    
+    .position-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+    }
+    
+    .position-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem 0.6rem;
+      background-color: var(--light);
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 50px; /* Pill shape */
+      border: 1px solid var(--primary);
+      transition: var(--transition);
+      text-align: center;
+      min-width: 40px;
+      font-size: 0.8rem;
+    }
+    
+    .position-btn:hover {
+      background-color: var(--primary);
+      color: var(--light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    /* Alternating colors for position pills */
+    .position-btn:nth-child(odd) {
+      background-color: var(--primary-light);
+    }
+    
+    .position-description {
+      margin-top: 2rem;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: var(--primary);
+      color: var(--light);
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 2rem;
+      border-top: 4px solid var(--secondary);
+    }
+    
+    .footer p {
+      margin: 0.5rem 0;
+      opacity: 0.8;
+      font-size: 0.875rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .formation-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .section-header .position-buttons {
+        width: 100%;
+      }
+      
+      .player {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+        line-height: 34px;
       }
     }
   </style>
@@ -203,23 +531,52 @@
 <body>
 
 <div class="header">
-  <h1>Sundbyberg FC - 3-4-1-2 Formation Guide</h1>
-  <p>Tactical breakdown of positioning and player movement patterns</p>
-  <p class="coach">Coach: Leon Kalema</p>
+  <div class="container">
+    <h1>Sundbyberg FC - 3-4-1-2 Formation Guide</h1>
+    <p>Tactical breakdown of positioning and player movement patterns</p>
+    <span class="coach">Coach: Leon Kalema</span>
+  </div>
 </div>
 
-<div class="security-notice">
-  <strong>TEAM CONFIDENTIAL:</strong> This tactical information is for Sundbyberg FC players and staff only. Please do not share access with opponents or outside parties.
-</div>
+<div class="container">
+  <div class="security-notice">
+    <strong>TEAM CONFIDENTIAL:</strong> This tactical information is for Sundbyberg FC players and staff only. Please do not share access with opponents or outside parties.
+  </div>
 
-<div id="pitch-container">
-  <h2>Formation Overview</h2>
-  <p>Click on any highlighted position to see detailed movement patterns</p>
-
-  <div id="pitch">
-    <!-- Pitch Lines -->
-    <div class="line halfway"></div>
-    <div class="circle"></div>
+  <div class="section-header">
+    <h2 class="section-title">Formation Overview</h2>
+    <div class="position-buttons">
+      <a href="gk.html" class="position-btn">GK</a>
+      <a href="lcb.html" class="position-btn">LCB</a>
+      <a href="cb.html" class="position-btn">CB</a>
+      <a href="rcb.html" class="position-btn">RCB</a>
+      <a href="lwb.html" class="position-btn">LWB</a>
+      <a href="rwb.html" class="position-btn">RWB</a>
+      <a href="lcm.html" class="position-btn">LCM</a>
+      <a href="rcm.html" class="position-btn">RCM</a>
+      <a href="cam.html" class="position-btn">CAM</a>
+      <a href="lst.html" class="position-btn">LST</a>
+      <a href="rst.html" class="position-btn">RST</a>
+    </div>
+  </div>
+  
+  <div id="pitch-container" class="card">
+    <div id="pitch">
+      <!-- Pitch Lines -->
+      <div class="field-markings">
+        <div class="center-circle"></div>
+        <div class="halfway-line"></div>
+        <div class="penalty-area top"></div>
+        <div class="penalty-area bottom"></div>
+        <div class="goal-area top"></div>
+        <div class="goal-area bottom"></div>
+        <div class="penalty-spot top"></div>
+        <div class="penalty-spot bottom"></div>
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+      </div>
 
     <!-- Goalkeeper -->
     <a href="gk.html" class="position-link">
@@ -272,55 +629,39 @@
 </div>
 
 <!-- Formation Details Section -->
-<div class="formation-details">
-  <div>
-    <h3>Key Principles</h3>
-    <ul>
-      <li><strong>Defensive Solidity</strong> - Three center backs provide a stable defensive foundation, allowing wingbacks to push forward.</li>
-      <li><strong>Width in Attack</strong> - Wingbacks provide width and crossing options, stretching the opposition defense.</li>
-      <li><strong>Central Overload</strong> - The diamond midfield (2 CMs, 1 CAM) creates numerical advantages in central areas.</li>
-      <li><strong>Strike Partnerships</strong> - Two forwards work together to create space and finishing opportunities.</li>
-    </ul>
-  </div>
+<div class="container">
+  <h2 class="section-title">Formation Principles</h2>
+  <div class="formation-details">
+    <div>
+      <h3>Key Principles</h3>
+      <ul>
+        <li><strong>Defensive Solidity</strong> - Three center backs provide a stable defensive foundation, allowing wingbacks to push forward.</li>
+        <li><strong>Width in Attack</strong> - Wingbacks provide width and crossing options, stretching the opposition defense.</li>
+        <li><strong>Central Overload</strong> - The diamond midfield (2 CMs, 1 CAM) creates numerical advantages in central areas.</li>
+        <li><strong>Strike Partnerships</strong> - Two forwards work together to create space and finishing opportunities.</li>
+      </ul>
+    </div>
   
-  <div>
-    <h3>Formation Strengths</h3>
-    <ul>
-      <li><strong>Defensive Coverage</strong> - Back three plus defensive midfielders provide excellent central protection.</li>
-      <li><strong>Attacking Width</strong> - Wingbacks create width when attacking, allowing for various crossing angles.</li>
-      <li><strong>Tactical Flexibility</strong> - Can easily switch between attacking (3-4-1-2) and defending (5-2-1-2) shapes.</li>
-      <li><strong>Creative Freedom</strong> - CAM has license to find spaces and create opportunities for forwards.</li>
-    </ul>
+    <div>
+      <h3>Formation Strengths</h3>
+      <ul>
+        <li><strong>Defensive Coverage</strong> - Back three plus defensive midfielders provide excellent central protection.</li>
+        <li><strong>Attacking Width</strong> - Wingbacks create width when attacking, allowing for various crossing angles.</li>
+        <li><strong>Tactical Flexibility</strong> - Can easily switch between attacking (3-4-1-2) and defending (5-2-1-2) shapes.</li>
+        <li><strong>Creative Freedom</strong> - CAM has license to find spaces and create opportunities for forwards.</li>
+      </ul>
+    </div>
   </div>
-</div>
 
-<!-- Position Details Section -->
-<div class="position-details">
-  <h2>Detailed Position Guides</h2>
-  <p>Select a position below to see comprehensive movement patterns, player instructions, and coaching tips</p>
-  
-  <div class="position-buttons">
-    <a href="gk.html" class="position-btn">GK</a>
-    <a href="lcb.html" class="position-btn">LCB</a>
-    <a href="cb.html" class="position-btn">CB</a>
-    <a href="rcb.html" class="position-btn">RCB</a>
-    <a href="lwb.html" class="position-btn">LWB</a>
-    <a href="rwb.html" class="position-btn">RWB</a>
-    <a href="lcm.html" class="position-btn">LCM</a>
-    <a href="rcm.html" class="position-btn">RCM</a>
-    <a href="cam.html" class="position-btn">CAM</a>
-    <a href="lst.html" class="position-btn">LST</a>
-    <a href="rst.html" class="position-btn">RST</a>
-  </div>
-  
-  <p class="position-description">Each position guide includes interactive visualizations of attacking, defensive, and transition movements.</p>
-</div>
+
 
 <!-- Footer -->
 <div class="footer">
-  <p>Sundbyberg FC Formation Guide - Tactical Analysis</p>
-  <p>Developed for team training and player education</p>
-  <p>Coach: Leon Kalema</p>
+  <div class="container">
+    <p>Sundbyberg FC Formation Guide - Tactical Analysis</p>
+    <p>Developed for team training and player education</p>
+    <p>Coach: Leon Kalema</p>
+  </div>
 </div>
 
 </body>
